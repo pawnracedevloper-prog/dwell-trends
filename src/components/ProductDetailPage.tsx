@@ -16,7 +16,8 @@ export function ProductDetailPage() {
     async function fetchProductDetails() {
       setLoading(true);
       try {
-        const res = await fetch(`http://localhost:8000/api/v1/products/${productId}`);
+        const API_URL = import.meta.env.VITE_API_URL || "https://dwell-trends-backend.vercel.app/api/v1";
+        const res = await fetch(`${API_URL}/products/${productId}`);
         const data = await res.json();
         if (data.success && data.product) {
           setProduct(data.product);

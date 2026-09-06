@@ -1,12 +1,15 @@
 import { useState, useEffect } from "react";
 import { useShop } from "@/lib/store";
+import { endpoints } from "@/lib/endpoints";
 import { User, Package, MapPin, Phone, Mail, LogOut, CheckCircle2 } from "lucide-react";
 
 export function ProfilePage() {
-  const { user, signIn, signOut, orders } = useShop();
+  const { user, signIn, signOut } = useShop();
   const [activeTab, setActiveTab] = useState<"profile" | "orders">("profile");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const [orders, setOrders] = useState<any[]>([]);
+  const [ordersLoading, setOrdersLoading] = useState(false);
 
   const [form, setForm] = useState({
     name: user?.name || "",
@@ -27,14 +30,33 @@ export function ProfilePage() {
     }
   }, [user]);
 
+  useEffect(() => {
+    async function fetchOrders() {
+      setOrdersLoading(true);
+      try {
+        const data = await endpoints.getMyOrders();
+        if (data.success && data.orders) {
+          setOrders(data.orders);
+        }
+      } catch (err) {
+        console.error("Failed to load orders:", err);
+      } finally {
+        setOrdersLoading(false);
+      }
+    }
+    if (user) {
+      fetchOrders();
+    }
+  }, [user]);
+
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setMessage("");
 
     try {
-      // Simulate or execute live API update call
-      const res = await fetch("http://localhost:8000/api/v1/users/profile", {
+      const API_URL = import.meta.env.VITE_API_URL || "https://dwell-trends-backend.vercel.app/api/v1";
+      const res = await fetch(`${API_URL}/users/profile`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -51,7 +73,6 @@ export function ProfilePage() {
         setMessage(data.message || "Failed to update profile.");
       }
     } catch (err) {
-      // Fallback local update if backend route isn't fully set up yet
       signIn({ name: form.name, email: form.email });
       setMessage("Profile updated successfully (local state)!");
     } finally {
@@ -205,39 +226,41 @@ export function ProfilePage() {
         </form>
       ) : (
         <div className="space-y-4">
-          {orders.length === 0 ? (
+          {ordersLoading ? (
+            <div className="text-center py-20 text-xs text-muted-foreground">Loading orders...</div>
+          ) : orders.length === 0 ? (
             <div className="text-center py-20 border border-dashed border-border rounded-2xl">
               <Package className="h-10 w-10 text-muted-foreground mx-auto mb-2 stroke-1" />
               <p className="text-xs text-muted-foreground">No orders placed yet.</p>
             </div>
           ) : (
             orders.map((order) => (
-              <div key={order.id} className="bg-card border border-border p-6 rounded-2xl shadow-sm space-y-4">
+              <div key={order._id} className="bg-card border border-border p-6 rounded-2xl shadow-sm space-y-4">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-border pb-4">
                   <div>
-                    <span className="text-xs font-bold">Order #{order.id}</span>
-                    <p className="text-[11px] text-muted-foreground">{order.date}</p>
+                    <span className="text-xs font-bold font-mono">Order #{order._id}</span>
+                    <p className="text-[11px] text-muted-foreground">{new Date(order.createdAt).toLocaleDateString()}</p>
                   </div>
                   <div className="flex items-center gap-3">
                     <span className="px-3 py-1 bg-primary/10 text-primary text-[10px] uppercase font-semibold rounded-full tracking-wider">
-                      {order.status}
+                      {order.orderStatus || "Processing"}
                     </span>
-                    <span className="text-sm font-bold text-primary">₹{order.total}</span>
+                    <span className="text-sm font-bold text-primary">₹{order.totalAmount}</span>
                   </div>
                 </div>
 
                 <div className="space-y-3">
-                  {order.items.map((item, i) => (
-                    <div key={i} className="flex items-center gap-3">
-                      <div className="w-12 h-14 bg-secondary/20 rounded-lg overflow-hidden shrink-0">
-                        <img src={item.image || "https://placehold.co/200x300"} alt="" className="w-full h-full object-cover" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-xs font-semibold truncate">{item.name}</p>
-                        <p className="text-[11px] text-muted-foreground">Quantity: {item.qty}</p>
-                      </div>
+                  {order.items.map((item: any, i: number) => (
+                    <div key={i} className="flex items-center justify-between text-xs">
+                      <span className="font-medium text-foreground/80">{item.name} × {item.qty}</span>
+                      <span className="font-semibold">₹{item.price * item.qty}</span>
                     </div>
                   ))}
+                </div>
+
+                <div className="pt-2 text-[0.7rem] text-muted-foreground border-t border-border/40 flex justify-between">
+                  <span>Shipping to: {order.shippingAddress?.street}, {order.shippingAddress?.city} - {order.shippingAddress?.pincode}</span>
+                  <span className="uppercase text-primary font-medium">{order.paymentStatus || "Paid"}</span>
                 </div>
               </div>
             ))

@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { endpoints } from "@/lib/endpoints";
-import { Plus, Trash2, Upload, ShieldCheck } from "lucide-react";
+import { Plus, Trash2, ShieldCheck } from "lucide-react";
 
 export function AdminDashboard() {
   const [name, setName] = useState("");
@@ -60,9 +59,11 @@ export function AdminDashboard() {
         }
       }
 
-      // Direct multipart request helper call
+      // Use VITE_API_URL or fallback to deployed backend URL
+      const API_URL = import.meta.env.VITE_API_URL || "https://dwell-trends-backend.vercel.app/api/v1";
       const token = localStorage.getItem("token");
-      const res = await fetch("http://localhost:8000/api/v1/products", {
+      
+      const res = await fetch(`${API_URL}/products`, {
         method: "POST",
         headers: {
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
@@ -80,7 +81,11 @@ export function AdminDashboard() {
       setDescription("");
       setPrice("");
       setMrp("");
+      setFabric("");
+      setWork("");
+      setDetailsText("");
       setImages(null);
+      setVariants([{ size: "S", colourName: "Red", colourHex: "#FF0000", stock: 10, sku: "" }]);
     } catch (err: any) {
       setMessage(err.message);
     } finally {
@@ -124,7 +129,7 @@ export function AdminDashboard() {
           </div>
           <div>
             <label className="text-xs font-medium mb-1 block">Upload Images (Max 5)</label>
-            <input type="file" multiple onChange={(e) => setImages(e.target.files)} className="text-xs file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-primary file:text-primary-foreground hover:file:opacity-9k cursor-pointer" />
+            <input type="file" multiple onChange={(e) => setImages(e.target.files)} className="text-xs file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-primary file:text-primary-foreground hover:file:opacity-90 cursor-pointer" />
           </div>
         </div>
 

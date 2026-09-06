@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:8000/api/v1";
+const API_URL = import.meta.env.VITE_API_URL || "https://dwell-trends-backend.vercel.app/api/v1";
 
 // Helper for making authenticated requests
 async function fetchAPI(endpoint: string, options: RequestInit = {}) {
@@ -26,17 +26,20 @@ export const endpoints = {
     return fetchAPI(`/products${query}`);
   },
   
-  // Auth
+  // Auth & Users
   login: (credentials: any) => 
     fetchAPI("/users/login", { method: "POST", body: JSON.stringify(credentials) }),
     
   register: (userData: any) => 
     fetchAPI("/users/register", { method: "POST", body: JSON.stringify(userData) }),
+
+  resetPassword: (payload: any) => 
+    fetchAPI("/users/reset-password", { method: "POST", body: JSON.stringify(payload) }),
     
   // Orders
   createOrder: (orderData: any) => 
     fetchAPI("/orders", { method: "POST", body: JSON.stringify(orderData) }),
     
   getMyOrders: () => 
-    fetchAPI("/orders/myorders"),
+    fetchAPI("/orders"),
 };

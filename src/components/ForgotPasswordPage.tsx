@@ -16,11 +16,12 @@ export function ForgotPasswordPage() {
     setMessage("");
 
     try {
-        const res = await fetch("http://localhost:8000/api/v1/users/reset-password", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email, newPassword }),
-        });
+      const API_URL = import.meta.env.VITE_API_URL || "https://dwell-trends-backend.vercel.app/api/v1";
+      const res = await fetch(`${API_URL}/users/reset-password`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, newPassword }),
+      });
       const data = await res.json();
 
       if (res.ok && data.success) {
