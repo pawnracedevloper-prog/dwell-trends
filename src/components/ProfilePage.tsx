@@ -1,132 +1,249 @@
-import { useState } from "react";
-import { Package, Heart, LogOut, User as UserIcon } from "lucide-react";
+import { useState, useEffect } from "react";
 import { useShop } from "@/lib/store";
-import { PRODUCTS, inr } from "@/lib/products";
-import { ProductCard } from "@/components/ProductCard";
+import { User, Package, MapPin, Phone, Mail, LogOut, CheckCircle2 } from "lucide-react";
 
 export function ProfilePage() {
-  const { orders, wishlist, user, signIn, signOut } = useShop();
-  const [activeTab, setActiveTab] = useState<"orders" | "wishlist">("orders");
+  const { user, signIn, signOut, orders } = useShop();
+  const [activeTab, setActiveTab] = useState<"profile" | "orders">("profile");
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
 
-  // Mock Login for the lite version
+  const [form, setForm] = useState({
+    name: user?.name || "",
+    email: user?.email || "",
+    phone: "",
+    address: "",
+    city: "",
+    pincode: "",
+  });
+
+  useEffect(() => {
+    if (user) {
+      setForm((prev) => ({
+        ...prev,
+        name: user.name || "",
+        email: user.email || "",
+      }));
+    }
+  }, [user]);
+
+  const handleUpdateProfile = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setMessage("");
+
+    try {
+      // Simulate or execute live API update call
+      const res = await fetch("http://localhost:8000/api/v1/users/profile", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify(form),
+      });
+      const data = await res.json();
+      
+      if (data.success || res.ok) {
+        signIn({ name: form.name, email: form.email });
+        setMessage("Profile updated successfully!");
+      } else {
+        setMessage(data.message || "Failed to update profile.");
+      }
+    } catch (err) {
+      // Fallback local update if backend route isn't fully set up yet
+      signIn({ name: form.name, email: form.email });
+      setMessage("Profile updated successfully (local state)!");
+    } finally {
+      setLoading(false);
+      setTimeout(() => setMessage(""), 3000);
+    }
+  };
+
   if (!user) {
     return (
-      <div className="container-page flex min-h-[50vh] flex-col items-center justify-center py-12">
-        <UserIcon className="h-12 w-12 text-muted-foreground/30 mb-4" />
-        <h1 className="font-display text-2xl mb-6">Account Login</h1>
-        <button
-          onClick={() => signIn({ name: "Guest User", email: "guest@saanvi.com" })}
-          className="rounded-full bg-primary px-8 py-3 text-sm font-medium text-primary-foreground"
-        >
-          Sign In as Guest
-        </button>
+      <div className="container-page py-28 text-center space-y-4">
+        <User className="h-12 w-12 text-muted-foreground mx-auto stroke-1" />
+        <h1 className="font-display text-2xl font-bold">Access Denied</h1>
+        <p className="text-xs text-muted-foreground">Please sign in to view and manage your profile.</p>
       </div>
     );
   }
 
-  const wishlistProducts = wishlist
-    .map((id) => PRODUCTS.find((p) => p.id === id))
-    .filter(Boolean) as typeof PRODUCTS;
-
   return (
-    <div className="container-page py-8 sm:py-12">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-10 pb-6 border-b border-border/70">
-        <div>
-          <h1 className="font-display text-3xl">Hello, {user.name}</h1>
-          <p className="text-sm text-muted-foreground mt-1">{user.email}</p>
+    <div className="container-page py-10 max-w-4xl">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4 border-b border-border pb-6">
+        <div className="flex items-center gap-4">
+          <div className="w-16 h-16 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-2xl">
+            {user.name?.[0]?.toUpperCase() || "U"}
+          </div>
+          <div>
+            <h1 className="font-display text-2xl font-bold">{user.name}</h1>
+            <p className="text-xs text-muted-foreground">{user.email}</p>
+          </div>
         </div>
         <button
           onClick={signOut}
-          className="flex items-center gap-2 text-sm text-muted-foreground hover:text-destructive transition-colors"
+          className="flex items-center gap-2 px-4 py-2 border border-border rounded-xl text-xs font-medium hover:bg-secondary/50 text-destructive transition-all"
         >
           <LogOut className="h-4 w-4" /> Sign Out
         </button>
       </div>
 
-      <div className="flex flex-col md:flex-row gap-8">
-        {/* Sidebar Nav */}
-        <nav className="flex w-full overflow-x-auto md:w-56 md:flex-col gap-2 hide-scrollbar">
-          <button
-            onClick={() => setActiveTab("orders")}
-            className={`flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-colors whitespace-nowrap ${
-              activeTab === "orders" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-accent"
-            }`}
-          >
-            <Package className="h-4 w-4" /> My Orders ({orders.length})
-          </button>
-          <button
-            onClick={() => setActiveTab("wishlist")}
-            className={`flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-colors whitespace-nowrap ${
-              activeTab === "wishlist" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-accent"
-            }`}
-          >
-            <Heart className="h-4 w-4" /> Wishlist ({wishlist.length})
-          </button>
-        </nav>
+      {/* Tabs */}
+      <div className="flex gap-4 border-b border-border mb-8">
+        <button
+          onClick={() => setActiveTab("profile")}
+          className={`pb-3 text-xs font-semibold uppercase tracking-wider transition-all border-b-2 ${
+            activeTab === "profile" ? "border-primary text-primary" : "border-transparent text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          Personal Details & Address
+        </button>
+        <button
+          onClick={() => setActiveTab("orders")}
+          className={`pb-3 text-xs font-semibold uppercase tracking-wider transition-all border-b-2 ${
+            activeTab === "orders" ? "border-primary text-primary" : "border-transparent text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          Order History ({orders.length})
+        </button>
+      </div>
 
-        {/* Content Area */}
-        <div className="flex-1 min-w-0">
-          {activeTab === "orders" && (
-            <div className="space-y-6">
-              {orders.length === 0 ? (
-                <p className="text-muted-foreground text-sm">You haven't placed any orders yet.</p>
-              ) : (
-                orders.map((order) => (
-                  <div key={order.id} className="rounded-xl border border-border bg-card overflow-hidden">
-                    <div className="border-b border-border bg-secondary/30 px-5 py-3 flex flex-wrap justify-between gap-4 text-sm">
-                      <div>
-                        <p className="text-muted-foreground text-xs uppercase tracking-wider">Order ID</p>
-                        <p className="font-medium">{order.id}</p>
-                      </div>
-                      <div>
-                        <p className="text-muted-foreground text-xs uppercase tracking-wider">Date</p>
-                        <p className="font-medium">{order.date}</p>
-                      </div>
-                      <div>
-                        <p className="text-muted-foreground text-xs uppercase tracking-wider">Total</p>
-                        <p className="font-medium">{inr(order.total)}</p>
-                      </div>
-                      <div>
-                        <span className="inline-flex rounded-full bg-success/10 px-2.5 py-1 text-xs font-semibold text-success">
-                          {order.status}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="p-5">
-                      <ul className="divide-y divide-border/50">
-                        {order.items.map((item, idx) => (
-                          <li key={idx} className="flex gap-4 py-3 first:pt-0 last:pb-0">
-                            <img src={item.image} alt="" className="h-16 w-12 rounded object-cover bg-muted" />
-                            <div>
-                              <p className="text-sm font-medium">{item.name}</p>
-                              <p className="text-xs text-muted-foreground mt-1">Qty: {item.qty}</p>
-                            </div>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
-                ))
-              )}
+      {message && (
+        <div className="mb-6 p-4 bg-primary/10 border border-primary/20 rounded-xl text-xs font-medium text-primary flex items-center gap-2">
+          <CheckCircle2 className="h-4 w-4" /> {message}
+        </div>
+      )}
+
+      {activeTab === "profile" ? (
+        <form onSubmit={handleUpdateProfile} className="space-y-6 bg-card border border-border p-6 rounded-2xl shadow-sm">
+          <h2 className="font-display text-lg font-bold">Edit Account & Delivery Info</h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-1.5">
+              <label className="text-xs font-medium text-muted-foreground flex items-center gap-1.5">
+                <User className="h-3.5 w-3.5" /> Full Name
+              </label>
+              <input
+                type="text"
+                required
+                value={form.name}
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
+                className="w-full p-3 bg-secondary/20 border border-border rounded-xl text-xs focus:outline-none focus:border-primary"
+              />
             </div>
-          )}
 
-          {activeTab === "wishlist" && (
-            <div>
-              {wishlistProducts.length === 0 ? (
-                <p className="text-muted-foreground text-sm">Your wishlist is empty.</p>
-              ) : (
-                <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
-                  {wishlistProducts.map((product) => (
-                    <ProductCard key={product.id} product={product} />
+            <div className="space-y-1.5">
+              <label className="text-xs font-medium text-muted-foreground flex items-center gap-1.5">
+                <Mail className="h-3.5 w-3.5" /> Email Address
+              </label>
+              <input
+                type="email"
+                disabled
+                value={form.email}
+                className="w-full p-3 bg-secondary/40 border border-border rounded-xl text-xs text-muted-foreground cursor-not-allowed"
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-xs font-medium text-muted-foreground flex items-center gap-1.5">
+                <Phone className="h-3.5 w-3.5" /> Phone Number
+              </label>
+              <input
+                type="tel"
+                placeholder="10-digit mobile number"
+                value={form.phone}
+                onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                className="w-full p-3 bg-secondary/20 border border-border rounded-xl text-xs focus:outline-none focus:border-primary"
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-xs font-medium text-muted-foreground flex items-center gap-1.5">
+                <MapPin className="h-3.5 w-3.5" /> Pincode
+              </label>
+              <input
+                type="text"
+                placeholder="Postal Code"
+                value={form.pincode}
+                onChange={(e) => setForm({ ...form, pincode: e.target.value })}
+                className="w-full p-3 bg-secondary/20 border border-border rounded-xl text-xs focus:outline-none focus:border-primary"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-xs font-medium text-muted-foreground">Street Address</label>
+            <input
+              type="text"
+              placeholder="House no., Building name, Street, Landmark"
+              value={form.address}
+              onChange={(e) => setForm({ ...form, address: e.target.value })}
+              className="w-full p-3 bg-secondary/20 border border-border rounded-xl text-xs focus:outline-none focus:border-primary"
+            />
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-xs font-medium text-muted-foreground">City</label>
+            <input
+              type="text"
+              placeholder="City"
+              value={form.city}
+              onChange={(e) => setForm({ ...form, city: e.target.value })}
+              className="w-full p-3 bg-secondary/20 border border-border rounded-xl text-xs focus:outline-none focus:border-primary"
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="px-6 py-3 bg-primary text-primary-foreground rounded-full text-xs font-semibold uppercase tracking-wider hover:opacity-95 transition-all disabled:opacity-50"
+          >
+            {loading ? "Saving Changes..." : "Save Changes"}
+          </button>
+        </form>
+      ) : (
+        <div className="space-y-4">
+          {orders.length === 0 ? (
+            <div className="text-center py-20 border border-dashed border-border rounded-2xl">
+              <Package className="h-10 w-10 text-muted-foreground mx-auto mb-2 stroke-1" />
+              <p className="text-xs text-muted-foreground">No orders placed yet.</p>
+            </div>
+          ) : (
+            orders.map((order) => (
+              <div key={order.id} className="bg-card border border-border p-6 rounded-2xl shadow-sm space-y-4">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-border pb-4">
+                  <div>
+                    <span className="text-xs font-bold">Order #{order.id}</span>
+                    <p className="text-[11px] text-muted-foreground">{order.date}</p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="px-3 py-1 bg-primary/10 text-primary text-[10px] uppercase font-semibold rounded-full tracking-wider">
+                      {order.status}
+                    </span>
+                    <span className="text-sm font-bold text-primary">₹{order.total}</span>
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  {order.items.map((item, i) => (
+                    <div key={i} className="flex items-center gap-3">
+                      <div className="w-12 h-14 bg-secondary/20 rounded-lg overflow-hidden shrink-0">
+                        <img src={item.image || "https://placehold.co/200x300"} alt="" className="w-full h-full object-cover" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs font-semibold truncate">{item.name}</p>
+                        <p className="text-[11px] text-muted-foreground">Quantity: {item.qty}</p>
+                      </div>
+                    </div>
                   ))}
                 </div>
-              )}
-            </div>
+              </div>
+            ))
           )}
         </div>
-      </div>
+      )}
     </div>
   );
 }

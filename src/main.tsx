@@ -23,6 +23,10 @@ import { ProductsPage } from "./components/ProductsPage";
 import { ProductDetailPage } from "./components/ProductDetailPage";
 import { CheckoutPage } from "./components/CheckoutPage";
 import { ProfilePage } from "./components/ProfilePage";
+import { AuthPage } from "./components/AuthPage";
+import { AdminDashboard } from "./components/AdminDashboard";
+import { CartPage } from "./components/CartPage";
+import { ForgotPasswordPage } from "./components/ForgotPasswordPage"; // <-- Added Forgot Password Page import
 
 // --- ROOT LAYOUT ---
 const rootRoute = createRootRoute({
@@ -56,6 +60,12 @@ const productsRoute = createRoute({
   component: ProductsPage,
 });
 
+const adminRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/admin",
+  component: AdminDashboard,
+});
+
 const productDetailRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/product/$productId",
@@ -74,13 +84,35 @@ const profileRoute = createRoute({
   component: ProfilePage,
 });
 
+const authRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/auth",
+  component: AuthPage,
+});
+
+const cartRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/cart",
+  component: CartPage,
+});
+
+const forgotPasswordRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/forgot-password",
+  component: ForgotPasswordPage, // <-- Added Forgot Password Route
+});
+
 // --- ROUTER ASSEMBLY ---
 const routeTree = rootRoute.addChildren([
   indexRoute,
   productsRoute,
+  adminRoute,
   productDetailRoute,
   checkoutRoute,
   profileRoute,
+  authRoute,
+  cartRoute,
+  forgotPasswordRoute, // <-- Included in children array
 ]);
 
 const router = createRouter({ routeTree });

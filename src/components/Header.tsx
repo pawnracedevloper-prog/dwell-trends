@@ -56,7 +56,7 @@ export function Header() {
 
         <nav className="flex shrink-0 items-center gap-1 sm:gap-2">
           <Link
-            to="/auth"
+            to={user ? "/profile" : "/auth"}
             className="hidden items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors hover:bg-accent sm:flex"
           >
             <User className="h-4.5 w-4.5" />
@@ -136,7 +136,7 @@ export function Header() {
                 {c}
               </Link>
             ))}
-            <Link to="/auth" onClick={() => setOpen(false)} className="border-t border-border/60 py-3 text-sm">
+            <Link to={user ? "/profile" : "/auth"} onClick={() => setOpen(false)} className="border-t border-border/60 py-3 text-sm">
               {user ? "My account" : "Login / Sign up"}
             </Link>
           </div>
