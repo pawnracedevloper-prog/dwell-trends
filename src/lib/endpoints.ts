@@ -1,8 +1,7 @@
 const API_URL = import.meta.env.VITE_API_URL || "https://dwell-trends-backend.vercel.app/api/v1";
 
-// Helper for making authenticated requests
 async function fetchAPI(endpoint: string, options: RequestInit = {}) {
-  const token = localStorage.getItem("token"); // Assuming you store JWT here
+  const token = localStorage.getItem("token");
   
   const headers = {
     "Content-Type": "application/json",
@@ -41,5 +40,12 @@ export const endpoints = {
     fetchAPI("/orders", { method: "POST", body: JSON.stringify(orderData) }),
     
   getMyOrders: () => 
-    fetchAPI("/orders"),
+    fetchAPI("/orders/myorders"),
+
+  getOrderById: (orderId: string) => 
+    fetchAPI(`/orders/${orderId}`),
+
+  // Admin Order Actions
+  updateOrderStatus: (orderId: string, statusData: { orderStatus?: string; paymentStatus?: string }) =>
+    fetchAPI(`/orders/${orderId}/status`, { method: "PATCH", body: JSON.stringify(statusData) }),
 };

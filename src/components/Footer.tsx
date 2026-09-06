@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { Instagram, Mail, Phone, ShieldCheck, Truck, RotateCcw } from "lucide-react";
-import { BRAND, CATEGORIES } from "@/lib/products";
+import { CATEGORIES } from "@/lib/products";
 
 export function Footer() {
   return (
@@ -23,10 +23,9 @@ export function Footer() {
 
       <div className="container-page grid gap-8 py-12 sm:grid-cols-2 lg:grid-cols-4">
         <div>
-          <p className="font-display text-xl text-primary">{BRAND}</p>
+          <p className="font-display text-xl font-bold tracking-tight text-primary">Dwell Trends</p>
           <p className="mt-3 max-w-xs text-sm leading-relaxed text-muted-foreground">
-            Thoughtfully made ethnic wear for women — handwoven silks, Lucknowi chikankari and
-            everyday cottons, shipped from Jaipur.
+            Thoughtfully curated modern fashion and timeless ethnic wear — handcrafted silks, everyday cottons, and trendsetting styles shipped across India.
           </p>
           <div className="mt-4 flex gap-4 text-muted-foreground">
             <a href="#" aria-label="Instagram" className="transition-colors hover:text-rose-deep">
@@ -72,7 +71,7 @@ export function Footer() {
         <div>
           <p className="eyebrow mb-3 text-muted-foreground">Get 10% off</p>
           <p className="text-sm text-muted-foreground">
-            Join our list for new drops and festive edits.
+            Join our list for new drops and exclusive seasonal edits.
           </p>
           <form
             onSubmit={(e) => e.preventDefault()}
@@ -92,7 +91,7 @@ export function Footer() {
 
       <div className="border-t border-border/70">
         <p className="container-page py-5 text-xs text-muted-foreground">
-          © {new Date().getFullYear()} {BRAND}. All prices inclusive of taxes. Made in India.
+          © {new Date().getFullYear()} Dwell Trends. All prices inclusive of taxes. Made in India.
         </p>
       </div>
     </footer>

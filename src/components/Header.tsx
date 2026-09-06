@@ -1,10 +1,10 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { Heart, Menu, Search, ShoppingBag, User, X } from "lucide-react";
 import { useState } from "react";
-import { BRAND, CATEGORIES } from "@/lib/products";
+import { CATEGORIES } from "@/lib/products";
 import { useShop } from "@/lib/store";
 
-export function Header() {
+export function Header({ onOpenCart }: { onOpenCart?: () => void }) {
   const [q, setQ] = useState("");
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
@@ -36,8 +36,12 @@ export function Header() {
             {open ? <Menu className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
           <Link to="/" className="min-w-0 leading-none">
-            <span className="block font-display text-xl text-primary sm:text-2xl">{BRAND}</span>
-            <span className="eyebrow hidden text-muted-foreground sm:block">Ethnic wear for women</span>
+            <span className="block font-display text-xl font-bold tracking-tight text-primary sm:text-2xl">
+              Dwell Trends
+            </span>
+            <span className="eyebrow hidden text-muted-foreground sm:block">
+              Modern Living & Ethnic Collection
+            </span>
           </Link>
         </div>
 
@@ -47,7 +51,7 @@ export function Header() {
             <input
               value={q}
               onChange={(e) => setQ(e.target.value)}
-              placeholder="Search for anarkali, chikankari, party wear…"
+              placeholder="Search products, collections, trends…"
               aria-label="Search products"
               className="h-11 w-full rounded-full border border-border bg-secondary/60 pl-11 pr-4 text-sm outline-none transition-all placeholder:text-muted-foreground focus:border-rose-deep focus:bg-card focus:ring-4 focus:ring-rose-soft"
             />
@@ -70,14 +74,15 @@ export function Header() {
             <Heart className="h-5 w-5" />
             {wishlist.length > 0 && <Badge n={wishlist.length} />}
           </Link>
-          <Link
-            to="/cart"
+          <button
+            type="button"
+            onClick={onOpenCart}
             aria-label="Cart"
             className="relative grid h-10 w-10 place-items-center rounded-lg transition-colors hover:bg-accent"
           >
             <ShoppingBag className="h-5 w-5" />
             {count > 0 && <Badge n={count} />}
-          </Link>
+          </button>
         </nav>
       </div>
 
@@ -87,7 +92,7 @@ export function Header() {
           <input
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder="Search suits, kurtis, anarkali…"
+            placeholder="Search products, collections…"
             aria-label="Search products"
             className="h-11 w-full rounded-full border border-border bg-secondary/60 pl-11 pr-4 text-sm outline-none placeholder:text-muted-foreground focus:border-rose-deep focus:bg-card"
           />

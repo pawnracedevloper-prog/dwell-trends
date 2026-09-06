@@ -8,16 +8,16 @@ import {
   createRootRoute,
 } from "@tanstack/react-router";
 
-// 1. Critical: Import global CSS first so Tailwind applies universally
+// 1. Global CSS
 import "./styles.css";
 
-// 2. Import Provider & Layout Components
+// 2. Providers & Layout
 import { ShopProvider } from "./lib/store";
 import { Header } from "./components/Header";
 import { Footer } from "./components/Footer";
 import { CartDrawer } from "./components/CartDrawer";
 
-// 3. Import Pages
+// 3. Pages
 import { HomePage } from "./components/HomePage";
 import { ProductsPage } from "./components/ProductsPage";
 import { ProductDetailPage } from "./components/ProductDetailPage";
@@ -26,7 +26,8 @@ import { ProfilePage } from "./components/ProfilePage";
 import { AuthPage } from "./components/AuthPage";
 import { AdminDashboard } from "./components/AdminDashboard";
 import { CartPage } from "./components/CartPage";
-import { ForgotPasswordPage } from "./components/ForgotPasswordPage"; // <-- Added Forgot Password Page import
+import { ForgotPasswordPage } from "./components/ForgotPasswordPage";
+import { OrderTrackingPage } from "./pages/OrderTrackingPage"; // Order Tracking Page
 
 // --- ROOT LAYOUT ---
 const rootRoute = createRootRoute({
@@ -99,7 +100,13 @@ const cartRoute = createRoute({
 const forgotPasswordRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/forgot-password",
-  component: ForgotPasswordPage, // <-- Added Forgot Password Route
+  component: ForgotPasswordPage,
+});
+
+const orderTrackingRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/orders/track/$orderId",
+  component: OrderTrackingPage,
 });
 
 // --- ROUTER ASSEMBLY ---
@@ -112,7 +119,8 @@ const routeTree = rootRoute.addChildren([
   profileRoute,
   authRoute,
   cartRoute,
-  forgotPasswordRoute, // <-- Included in children array
+  forgotPasswordRoute,
+  orderTrackingRoute,
 ]);
 
 const router = createRouter({ routeTree });
