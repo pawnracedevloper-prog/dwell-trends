@@ -1,8 +1,9 @@
-@import "tailwindcss" source(none);
-@source "../src";
+@import "tailwindcss";
 @import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
+
+/* Keep your @theme inline and all other CSS exactly as it is below this */
 
 /*
  * Saanvi Fashion design system.
