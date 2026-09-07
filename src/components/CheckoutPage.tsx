@@ -3,13 +3,12 @@ import { useShop } from "@/lib/store";
 import { useNavigate } from "@tanstack/react-router";
 import { endpoints } from "@/lib/endpoints";
 import { UpiPaymentModal } from "./UpiPaymentModal";
-import { Check, ChevronRight, ShieldCheck, Truck } from "lucide-react";
+import { Check, ShieldCheck } from "lucide-react";
 
 export function CheckoutPage() {
   const { cart, clearCart } = useShop();
   const navigate = useNavigate();
 
-  // Accordion Step Manager (1: Address, 2: Order Summary, 3: UPI Payment)
   const [activeStep, setActiveStep] = useState<1 | 2 | 3>(1);
   const [showUpiModal, setShowUpiModal] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -56,16 +55,9 @@ export function CheckoutPage() {
       discount,
       shippingFee,
       finalTotal,
-      shippingAddress: {
-        fullName: form.fullName,
-        phone: form.phone,
-        street: form.street,
-        city: form.city,
-        state: form.state,
-        pinCode: form.pinCode,
-      },
+      shippingAddress: form,
       paymentMethod: "upi",
-      paymentStatus: "Paid",
+      paymentStatus: "Paid", // Automatically marked paid for the dummy mock
     };
 
     try {
@@ -104,81 +96,28 @@ export function CheckoutPage() {
 
         {/* STEP 1: DELIVERY ADDRESS */}
         <div className="border border-border rounded-xl bg-card overflow-hidden">
-          <div
-            onClick={() => setActiveStep(1)}
-            className="p-4 bg-secondary/30 flex items-center justify-between cursor-pointer"
-          >
+          <div onClick={() => setActiveStep(1)} className="p-4 bg-secondary/30 flex items-center justify-between cursor-pointer">
             <div className="flex items-center gap-3">
-              <span className={`h-6 w-6 rounded-full flex items-center justify-center text-xs font-bold ${
-                activeStep > 1 ? "bg-green-600 text-white" : "bg-primary text-primary-foreground"
-              }`}>
+              <span className={`h-6 w-6 rounded-full flex items-center justify-center text-xs font-bold ${activeStep > 1 ? "bg-green-600 text-white" : "bg-primary text-primary-foreground"}`}>
                 {activeStep > 1 ? <Check className="h-3.5 w-3.5" /> : "1"}
               </span>
               <span className="font-display font-bold text-sm">Delivery Address</span>
             </div>
-            {activeStep > 1 && (
-              <span className="text-xs text-primary font-semibold">Change</span>
-            )}
+            {activeStep > 1 && <span className="text-xs text-primary font-semibold">Change</span>}
           </div>
 
           {activeStep === 1 ? (
             <form onSubmit={handleAddressSubmit} className="p-5 space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <input
-                  required
-                  placeholder="Full Name"
-                  value={form.fullName}
-                  onChange={(e) => setForm({ ...form, fullName: e.target.value })}
-                  className="p-3 bg-background border border-border rounded-xl text-xs outline-none focus:border-primary"
-                />
-                <input
-                  required
-                  type="tel"
-                  placeholder="10-digit Mobile Number"
-                  value={form.phone}
-                  onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                  className="p-3 bg-background border border-border rounded-xl text-xs outline-none focus:border-primary"
-                />
-                <input
-                  type="email"
-                  placeholder="Email ID (for invoice)"
-                  value={form.email}
-                  onChange={(e) => setForm({ ...form, email: e.target.value })}
-                  className="p-3 bg-background border border-border rounded-xl text-xs outline-none focus:border-primary"
-                />
-                <input
-                  required
-                  placeholder="PIN Code"
-                  value={form.pinCode}
-                  onChange={(e) => setForm({ ...form, pinCode: e.target.value })}
-                  className="p-3 bg-background border border-border rounded-xl text-xs outline-none focus:border-primary"
-                />
-                <input
-                  required
-                  placeholder="City / District"
-                  value={form.city}
-                  onChange={(e) => setForm({ ...form, city: e.target.value })}
-                  className="p-3 bg-background border border-border rounded-xl text-xs outline-none focus:border-primary"
-                />
-                <input
-                  required
-                  placeholder="State"
-                  value={form.state}
-                  onChange={(e) => setForm({ ...form, state: e.target.value })}
-                  className="p-3 bg-background border border-border rounded-xl text-xs outline-none focus:border-primary"
-                />
+                <input required placeholder="Full Name" value={form.fullName} onChange={(e) => setForm({ ...form, fullName: e.target.value })} className="p-3 bg-background border border-border rounded-xl text-xs outline-none focus:border-primary" />
+                <input required type="tel" placeholder="10-digit Mobile Number" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className="p-3 bg-background border border-border rounded-xl text-xs outline-none focus:border-primary" />
+                <input type="email" placeholder="Email ID (for invoice)" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="p-3 bg-background border border-border rounded-xl text-xs outline-none focus:border-primary" />
+                <input required placeholder="PIN Code" value={form.pinCode} onChange={(e) => setForm({ ...form, pinCode: e.target.value })} className="p-3 bg-background border border-border rounded-xl text-xs outline-none focus:border-primary" />
+                <input required placeholder="City / District" value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} className="p-3 bg-background border border-border rounded-xl text-xs outline-none focus:border-primary" />
+                <input required placeholder="State" value={form.state} onChange={(e) => setForm({ ...form, state: e.target.value })} className="p-3 bg-background border border-border rounded-xl text-xs outline-none focus:border-primary" />
               </div>
-              <input
-                required
-                placeholder="House No., Building, Street Area"
-                value={form.street}
-                onChange={(e) => setForm({ ...form, street: e.target.value })}
-                className="w-full p-3 bg-background border border-border rounded-xl text-xs outline-none focus:border-primary"
-              />
-              <button
-                type="submit"
-                className="px-8 py-3 bg-primary text-primary-foreground rounded-xl text-xs font-semibold uppercase tracking-wider"
-              >
+              <input required placeholder="House No., Building, Street Area" value={form.street} onChange={(e) => setForm({ ...form, street: e.target.value })} className="w-full p-3 bg-background border border-border rounded-xl text-xs outline-none focus:border-primary" />
+              <button type="submit" className="px-8 py-3 bg-primary text-primary-foreground rounded-xl text-xs font-semibold uppercase tracking-wider">
                 Deliver Here
               </button>
             </form>
@@ -191,14 +130,9 @@ export function CheckoutPage() {
 
         {/* STEP 2: ORDER SUMMARY */}
         <div className="border border-border rounded-xl bg-card overflow-hidden">
-          <div
-            onClick={() => form.fullName && setActiveStep(2)}
-            className="p-4 bg-secondary/30 flex items-center justify-between cursor-pointer"
-          >
+          <div onClick={() => form.fullName && setActiveStep(2)} className="p-4 bg-secondary/30 flex items-center justify-between cursor-pointer">
             <div className="flex items-center gap-3">
-              <span className={`h-6 w-6 rounded-full flex items-center justify-center text-xs font-bold ${
-                activeStep > 2 ? "bg-green-600 text-white" : "bg-primary text-primary-foreground"
-              }`}>
+              <span className={`h-6 w-6 rounded-full flex items-center justify-center text-xs font-bold ${activeStep > 2 ? "bg-green-600 text-white" : "bg-primary text-primary-foreground"}`}>
                 {activeStep > 2 ? <Check className="h-3.5 w-3.5" /> : "2"}
               </span>
               <span className="font-display font-bold text-sm">Order Summary ({cart.length} items)</span>
@@ -213,19 +147,13 @@ export function CheckoutPage() {
                     <img src={item.productDetails?.images?.[0]?.url || item.image} alt="" className="w-14 h-18 object-cover rounded-lg bg-secondary" />
                     <div className="flex-1 min-w-0">
                       <p className="text-xs font-bold truncate">{item.productDetails?.name}</p>
-                      <p className="text-[11px] text-muted-foreground mt-0.5">
-                        Size: {item.size || item.selectedSize} · Colour: {item.colour || item.selectedColour} · Qty: {item.qty}
-                      </p>
+                      <p className="text-[11px] text-muted-foreground mt-0.5">Size: {item.size || item.selectedSize} · Colour: {item.colour || item.selectedColour} · Qty: {item.qty}</p>
                       <p className="text-xs font-bold text-primary mt-2">₹{(item.productDetails?.price || 0) * item.qty}</p>
                     </div>
                   </div>
                 ))}
               </div>
-              <button
-                type="button"
-                onClick={() => setActiveStep(3)}
-                className="px-8 py-3 bg-primary text-primary-foreground rounded-xl text-xs font-semibold uppercase tracking-wider"
-              >
+              <button type="button" onClick={() => setActiveStep(3)} className="px-8 py-3 bg-primary text-primary-foreground rounded-xl text-xs font-semibold uppercase tracking-wider">
                 Continue to Payment
               </button>
             </div>
@@ -235,9 +163,7 @@ export function CheckoutPage() {
         {/* STEP 3: PAYMENT OPTION */}
         <div className="border border-border rounded-xl bg-card overflow-hidden">
           <div className="p-4 bg-secondary/30 flex items-center gap-3">
-            <span className="h-6 w-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-bold">
-              3
-            </span>
+            <span className="h-6 w-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-bold">3</span>
             <span className="font-display font-bold text-sm">Payment Options</span>
           </div>
 
@@ -253,13 +179,7 @@ export function CheckoutPage() {
                 </div>
                 <span className="text-xs font-bold text-primary">Fast & Verified</span>
               </div>
-
-              <button
-                type="button"
-                disabled={loading}
-                onClick={() => setShowUpiModal(true)}
-                className="w-full py-4 bg-primary text-primary-foreground rounded-full text-xs font-semibold uppercase tracking-wider hover:opacity-95 transition-all shadow-md"
-              >
+              <button type="button" disabled={loading} onClick={() => setShowUpiModal(true)} className="w-full py-4 bg-primary text-primary-foreground rounded-full text-xs font-semibold uppercase tracking-wider hover:opacity-95 transition-all shadow-md">
                 Pay ₹{finalTotal} via UPI
               </button>
             </div>
@@ -267,16 +187,12 @@ export function CheckoutPage() {
         </div>
       </div>
 
-      {/* Price Details Sidebar (Right Side) */}
+      {/* Price Details Sidebar */}
       <div className="lg:col-span-4 bg-card border border-border p-6 rounded-2xl h-fit space-y-4">
-        <h3 className="font-display text-base font-bold text-muted-foreground uppercase tracking-wider text-xs">
-          Price Details
-        </h3>
+        <h3 className="font-display text-base font-bold text-muted-foreground uppercase tracking-wider text-xs">Price Details</h3>
         <div className="border-t border-border pt-4 space-y-3 text-xs">
           <div className="flex justify-between"><span className="text-muted-foreground">Price ({cart.length} items)</span><span>₹{totalMrp}</span></div>
-          {discount > 0 && (
-            <div className="flex justify-between text-green-600 font-medium"><span>Discount</span><span>-₹{discount}</span></div>
-          )}
+          {discount > 0 && <div className="flex justify-between text-green-600 font-medium"><span>Discount</span><span>-₹{discount}</span></div>}
           <div className="flex justify-between"><span className="text-muted-foreground">Delivery Charges</span><span>{shippingFee === 0 ? "FREE" : `₹${shippingFee}`}</span></div>
           <div className="flex justify-between font-bold text-sm pt-3 border-t border-border"><span>Total Payable</span><span className="text-primary">₹{finalTotal}</span></div>
         </div>

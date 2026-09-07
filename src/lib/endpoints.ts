@@ -2,7 +2,7 @@ const API_URL = import.meta.env.VITE_API_URL || "https://dwell-trends-backend.ve
 
 async function fetchAPI(endpoint: string, options: RequestInit = {}) {
   const token = localStorage.getItem("token");
-  
+
   const headers = {
     "Content-Type": "application/json",
     ...(token ? { Authorization: `Bearer ${token}` } : {}),
@@ -11,7 +11,7 @@ async function fetchAPI(endpoint: string, options: RequestInit = {}) {
 
   const response = await fetch(`${API_URL}${endpoint}`, { ...options, headers });
   const data = await response.json();
-  
+
   if (!response.ok) {
     throw new Error(data.message || "Something went wrong");
   }
@@ -24,21 +24,24 @@ export const endpoints = {
     const query = category ? `?category=${encodeURIComponent(category)}` : "";
     return fetchAPI(`/products${query}`);
   },
-  
+
+  getProductById: (id: string) => 
+    fetchAPI(`/products/${id}`),
+
   // Auth & Users
-  login: (credentials: any) => 
+  login: (credentials: any) =>
     fetchAPI("/users/login", { method: "POST", body: JSON.stringify(credentials) }),
-    
-  register: (userData: any) => 
+
+  register: (userData: any) =>
     fetchAPI("/users/register", { method: "POST", body: JSON.stringify(userData) }),
 
-  resetPassword: (payload: any) => 
+  resetPassword: (payload: any) =>
     fetchAPI("/users/reset-password", { method: "POST", body: JSON.stringify(payload) }),
-    
+
   // Orders
-  createOrder: (orderData: any) => 
+  createOrder: (orderData: any) =>
     fetchAPI("/orders", { method: "POST", body: JSON.stringify(orderData) }),
-    
+
   getMyOrders: () => 
     fetchAPI("/orders/myorders"),
 
@@ -46,6 +49,16 @@ export const endpoints = {
     fetchAPI(`/orders/${orderId}`),
 
   // Admin Order Actions
+  getAllOrders: () => 
+    fetchAPI("/orders/all"),
+
   updateOrderStatus: (orderId: string, statusData: { orderStatus?: string; paymentStatus?: string }) =>
     fetchAPI(`/orders/${orderId}/status`, { method: "PATCH", body: JSON.stringify(statusData) }),
+
+  // Payment Verification & Gateways
+  initiatePayment: (orderId: string) =>
+    fetchAPI("/payments/initiate", { method: "POST", body: JSON.stringify({ orderId }) }),
+
+  checkPaymentStatus: (merchantTransactionId: string) =>
+    fetchAPI(`/payments/status/${merchantTransactionId}`),
 };

@@ -17,7 +17,7 @@ import { Header } from "./components/Header";
 import { Footer } from "./components/Footer";
 import { CartDrawer } from "./components/CartDrawer";
 
-// 3. Pages
+// 3. Pages & Components
 import { HomePage } from "./components/HomePage";
 import { ProductsPage } from "./components/ProductsPage";
 import { ProductDetailPage } from "./components/ProductDetailPage";
@@ -27,7 +27,7 @@ import { AuthPage } from "./components/AuthPage";
 import { AdminDashboard } from "./components/AdminDashboard";
 import { CartPage } from "./components/CartPage";
 import { ForgotPasswordPage } from "./components/ForgotPasswordPage";
-import { OrderTrackingPage } from "./pages/OrderTrackingPage"; // Order Tracking Page
+import { OrderTrackingPage } from "./pages/OrderTrackingPage"; // Placed in components directory alongside other views
 
 // --- ROOT LAYOUT ---
 const rootRoute = createRootRoute({
