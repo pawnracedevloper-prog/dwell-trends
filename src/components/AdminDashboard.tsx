@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Plus, Trash2, ShieldCheck, Package, ShoppingBag, Clock, CheckCircle2 } from "lucide-react";
+import { Plus, Trash2, ShieldCheck, Package, ShoppingBag } from "lucide-react";
 import { endpoints } from "@/lib/endpoints";
 
 export function AdminDashboard() {
@@ -25,7 +25,6 @@ export function AdminDashboard() {
   const [loadingProduct, setLoadingProduct] = useState(false);
   const [productMessage, setProductMessage] = useState("");
 
-  // Fetch orders on load
   useEffect(() => {
     fetchOrders();
   }, []);
@@ -194,7 +193,7 @@ export function AdminDashboard() {
                     <th className="px-4 py-3 font-semibold">Customer Details</th>
                     <th className="px-4 py-3 font-semibold">Items</th>
                     <th className="px-4 py-3 font-semibold">Total Amount</th>
-                    <th className="px-4 py-3 font-semibold">Payment Status</th>
+                    <th className="px-4 py-3 font-semibold">Payment & UTR</th>
                     <th className="px-4 py-3 font-semibold">Fulfillment Status</th>
                   </tr>
                 </thead>
@@ -218,19 +217,30 @@ export function AdminDashboard() {
                       </td>
                       <td className="px-4 py-4 font-bold text-foreground">₹{order.finalTotal}</td>
                       <td className="px-4 py-4">
-                        <select
-                          value={order.paymentStatus}
-                          onChange={(e) => handleStatusChange(order._id, "paymentStatus", e.target.value)}
-                          className={`text-[11px] font-bold p-1 rounded-lg border outline-none cursor-pointer ${
-                            order.paymentStatus === "Paid"
-                              ? "bg-green-50 text-green-700 border-green-200"
-                              : "bg-amber-50 text-amber-700 border-amber-200"
-                          }`}
-                        >
-                          <option value="Pending">Pending</option>
-                          <option value="Paid">Paid</option>
-                          <option value="Failed">Failed</option>
-                        </select>
+                        <div className="space-y-1">
+                          <select
+                            value={order.paymentStatus}
+                            onChange={(e) => handleStatusChange(order._id, "paymentStatus", e.target.value)}
+                            className={`text-[11px] font-bold p-1 rounded-lg border outline-none cursor-pointer ${
+                              order.paymentStatus === "Paid"
+                                ? "bg-green-50 text-green-700 border-green-200"
+                                : "bg-amber-50 text-amber-700 border-amber-200"
+                            }`}
+                          >
+                            <option value="Pending">Pending</option>
+                            <option value="Paid">Paid</option>
+                            <option value="Failed">Failed</option>
+                          </select>
+                          {order.paymentUtr ? (
+                            <div className="text-[10px] font-mono text-muted-foreground">
+                              UTR: <span className="font-bold text-foreground">{order.paymentUtr}</span>
+                            </div>
+                          ) : (
+                            <div className="text-[10px] text-amber-600 font-medium italic">
+                              UTR not submitted
+                            </div>
+                          )}
+                        </div>
                       </td>
                       <td className="px-4 py-4">
                         <select

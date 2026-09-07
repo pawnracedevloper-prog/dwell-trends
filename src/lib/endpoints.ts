@@ -61,4 +61,10 @@ export const endpoints = {
 
   checkPaymentStatus: (merchantTransactionId: string) =>
     fetchAPI(`/payments/status/${merchantTransactionId}`),
+
+  submitOrderUtr: (orderId: string, utr: string) =>
+    fetchAPI(`/orders/${orderId}/utr`, {
+      method: "PATCH",
+      body: JSON.stringify({ utr }),
+    }),
 };
