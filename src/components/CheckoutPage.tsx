@@ -28,7 +28,7 @@ export function CheckoutPage() {
   const totalMrp = cart.reduce((acc, item) => acc + (item.productDetails?.mrp || item.productDetails?.price || 0) * item.qty, 0);
   const subtotal = cart.reduce((acc, item) => acc + (item.productDetails?.price || 0) * item.qty, 0);
   const discount = totalMrp > subtotal ? totalMrp - subtotal : 0;
-  const shippingFee = subtotal > 0 && subtotal < 999 ? 79 : 0;
+  const shippingFee = 0;
   const finalTotal = subtotal + shippingFee;
 
   const handleAddressSubmit = (e: React.FormEvent) => {
