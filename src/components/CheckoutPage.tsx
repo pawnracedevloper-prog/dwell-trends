@@ -11,6 +11,7 @@ export function CheckoutPage() {
 
   const [activeStep, setActiveStep] = useState<1 | 2 | 3>(1);
   const [showUpiModal, setShowUpiModal] = useState(false);
+  const [createdOrderId, setCreatedOrderId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -36,7 +37,7 @@ export function CheckoutPage() {
     setActiveStep(2);
   };
 
-  const executeOrderCreation = async (upiRef: string) => {
+  const handleInitiateUpiPayment = async () => {
     setLoading(true);
     setErrorMessage("");
 
@@ -57,31 +58,39 @@ export function CheckoutPage() {
       finalTotal,
       shippingAddress: form,
       paymentMethod: "upi",
-      paymentStatus: "Paid", // Automatically marked paid for the dummy mock
+      paymentStatus: "Pending", // Order is pending until UPI app confirms payment
     };
 
     try {
       const response = await endpoints.createOrder(orderPayload);
       if (response.success) {
-        clearCart();
-        navigate({ to: `/orders/track/${response.order._id}` });
+        setCreatedOrderId(response.order._id);
+        setShowUpiModal(true); // Open modal with real order ID
       } else {
-        setErrorMessage(response.message || "Failed to finalize order.");
+        setErrorMessage(response.message || "Failed to initialize order.");
       }
     } catch (err: any) {
-      setErrorMessage(err.message || "Transaction error.");
+      setErrorMessage(err.message || "Failed to process checkout.");
     } finally {
       setLoading(false);
-      setShowUpiModal(false);
+    }
+  };
+
+  const handlePaymentCompletion = () => {
+    clearCart();
+    setShowUpiModal(false);
+    if (createdOrderId) {
+      navigate({ to: `/orders/track/${createdOrderId}` });
     }
   };
 
   return (
     <div className="container-page py-10 grid grid-cols-1 lg:grid-cols-12 gap-8">
-      {showUpiModal && (
+      {showUpiModal && createdOrderId && (
         <UpiPaymentModal
           amount={finalTotal}
-          onSuccess={(refId) => executeOrderCreation(refId)}
+          orderId={createdOrderId}
+          onSuccess={handlePaymentCompletion}
           onCancel={() => setShowUpiModal(false)}
         />
       )}
@@ -179,8 +188,13 @@ export function CheckoutPage() {
                 </div>
                 <span className="text-xs font-bold text-primary">Fast & Verified</span>
               </div>
-              <button type="button" disabled={loading} onClick={() => setShowUpiModal(true)} className="w-full py-4 bg-primary text-primary-foreground rounded-full text-xs font-semibold uppercase tracking-wider hover:opacity-95 transition-all shadow-md">
-                Pay ₹{finalTotal} via UPI
+              <button
+                type="button"
+                disabled={loading}
+                onClick={handleInitiateUpiPayment}
+                className="w-full py-4 bg-primary text-primary-foreground rounded-full text-xs font-semibold uppercase tracking-wider hover:opacity-95 transition-all shadow-md disabled:opacity-50"
+              >
+                {loading ? "Preparing Payment..." : `Pay ₹${finalTotal} via UPI`}
               </button>
             </div>
           )}

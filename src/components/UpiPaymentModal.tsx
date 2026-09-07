@@ -1,131 +1,150 @@
-import { useState } from "react";
-import { CheckCircle2, Loader2, QrCode, ShieldCheck } from "lucide-react";
+import { useState, useEffect } from "react";
+import { CheckCircle2, Loader2, Smartphone } from "lucide-react";
 
 interface UpiProps {
   amount: number;
-  onSuccess: (upiRefId: string) => void;
+  orderId: string;
+  onSuccess: () => void;
   onCancel: () => void;
 }
 
-export function UpiPaymentModal({ amount, onSuccess, onCancel }: UpiProps) {
-  const [upiId, setUpiId] = useState("");
-  const [selectedApp, setSelectedApp] = useState<string>("gpay");
-  const [stage, setStage] = useState<"SELECT" | "PROCESSING" | "SUCCESS">("SELECT");
+export function UpiPaymentModal({ amount, orderId, onSuccess, onCancel }: UpiProps) {
+  const [isMobile, setIsMobile] = useState(false);
+  const [stage, setStage] = useState<"PAY" | "CONFIRMING">("PAY");
 
-  const apps = [
-    { id: "gpay", name: "Google Pay", icon: "🟢" },
-    { id: "phonepe", name: "PhonePe", icon: "🟣" },
-    { id: "paytm", name: "Paytm UPI", icon: "🔵" },
-    { id: "custom", name: "Other UPI ID", icon: "⚡" },
-  ];
+  const MERCHANT_UPI_ID = "rishijyotisna@okicici"; 
+  const MERCHANT_NAME = "Jyotisna Rishi";
+  const TRANSACTION_REF = `DT_${orderId}`;
 
-  const handlePay = () => {
-    setStage("PROCESSING");
-    // Simulate real UPI authorization & handshake
-    setTimeout(() => {
-      setStage("SUCCESS");
-      setTimeout(() => {
-        const mockUpiRef = "UPI" + Math.floor(100000000 + Math.random() * 900000000);
-        onSuccess(mockUpiRef);
-      }, 1200);
-    }, 2000);
+  // Standard NPCI UPI URI Specification
+  const upiIntentUri = `upi://pay?pa=${MERCHANT_UPI_ID}&pn=${encodeURIComponent(
+    MERCHANT_NAME
+  )}&am=${amount}&cu=INR&tr=${TRANSACTION_REF}&tn=Order%20${orderId.slice(-6).toUpperCase()}`;
+
+  useEffect(() => {
+    // Detect if user is browsing from mobile
+    const checkMobile = /Android|iPhone|iPad|iPod|Opera Mini|IEMobile/i.test(navigator.userAgent);
+    setIsMobile(checkMobile);
+  }, []);
+
+  const handleOpenUpiApp = (appSpecificPrefix?: string) => {
+    let targetUri = upiIntentUri;
+
+    // Optional direct app intent schemes
+    if (appSpecificPrefix === "gpay") {
+      targetUri = `gpay://upi/pay?pa=${MERCHANT_UPI_ID}&pn=${encodeURIComponent(MERCHANT_NAME)}&am=${amount}&cu=INR&tr=${TRANSACTION_REF}`;
+    } else if (appSpecificPrefix === "phonepe") {
+      targetUri = `phonepe://pay?pa=${MERCHANT_UPI_ID}&pn=${encodeURIComponent(MERCHANT_NAME)}&am=${amount}&cu=INR&tr=${TRANSACTION_REF}`;
+    } else if (appSpecificPrefix === "paytm") {
+      targetUri = `paytmmp://pay?pa=${MERCHANT_UPI_ID}&pn=${encodeURIComponent(MERCHANT_NAME)}&am=${amount}&cu=INR&tr=${TRANSACTION_REF}`;
+    }
+
+    setStage("CONFIRMING");
+    window.location.href = targetUri;
   };
+
+  const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(
+    upiIntentUri
+  )}`;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
-      <div className="w-full max-w-md overflow-hidden rounded-2xl border border-border bg-card shadow-2xl">
-        {/* Flipkart-Style Header */}
+      <div className="w-full max-w-sm overflow-hidden rounded-2xl border border-border bg-card shadow-2xl">
+        {/* Modal Header */}
         <div className="flex items-center justify-between border-b border-border bg-secondary/30 px-6 py-4">
-          <div className="flex items-center gap-2">
-            <span className="font-display font-bold text-primary">UPI Payment</span>
-          </div>
+          <span className="font-display font-bold text-primary">UPI Payment</span>
           <span className="text-sm font-bold text-foreground">₹{amount}</span>
         </div>
 
-        <div className="p-6">
-          {stage === "SELECT" && (
+        <div className="p-6 text-center">
+          {stage === "PAY" ? (
             <div className="space-y-5">
-              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                Select your UPI App
-              </p>
+              {isMobile ? (
+                /* Mobile: One-Tap App Chooser */
+                <div className="space-y-3">
+                  <p className="text-xs text-muted-foreground font-medium">
+                    Choose an app to complete the payment:
+                  </p>
 
-              <div className="grid grid-cols-1 gap-2.5">
-                {apps.map((app) => (
-                  <label
-                    key={app.id}
-                    onClick={() => setSelectedApp(app.id)}
-                    className={`flex cursor-pointer items-center justify-between rounded-xl border p-3.5 transition-all ${
-                      selectedApp === app.id
-                        ? "border-primary bg-primary/5 shadow-sm"
-                        : "border-border hover:bg-secondary/40"
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <span className="text-lg">{app.icon}</span>
-                      <span className="text-xs font-bold text-foreground">{app.name}</span>
+                  <div className="grid grid-cols-1 gap-2.5 pt-1">
+                    <button
+                      type="button"
+                      onClick={() => handleOpenUpiApp()}
+                      className="flex items-center justify-center gap-2 w-full py-3 bg-primary text-primary-foreground rounded-xl text-xs font-bold uppercase tracking-wider shadow-md hover:opacity-95 transition-all"
+                    >
+                      <Smartphone className="h-4 w-4" /> Open Any UPI App
+                    </button>
+
+                    <div className="grid grid-cols-3 gap-2 pt-1">
+                      <button
+                        type="button"
+                        onClick={() => handleOpenUpiApp("gpay")}
+                        className="p-2.5 rounded-xl border border-border bg-secondary/40 text-[11px] font-bold hover:bg-secondary flex flex-col items-center gap-1"
+                      >
+                        <span>Google Pay</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleOpenUpiApp("phonepe")}
+                        className="p-2.5 rounded-xl border border-border bg-secondary/40 text-[11px] font-bold hover:bg-secondary flex flex-col items-center gap-1"
+                      >
+                        <span>PhonePe</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleOpenUpiApp("paytm")}
+                        className="p-2.5 rounded-xl border border-border bg-secondary/40 text-[11px] font-bold hover:bg-secondary flex flex-col items-center gap-1"
+                      >
+                        <span>Paytm</span>
+                      </button>
                     </div>
-                    <input
-                      type="radio"
-                      name="upiApp"
-                      checked={selectedApp === app.id}
-                      onChange={() => setSelectedApp(app.id)}
-                      className="accent-primary"
-                    />
-                  </label>
-                ))}
-              </div>
-
-              {selectedApp === "custom" && (
-                <div className="space-y-1 pt-2">
-                  <input
-                    type="text"
-                    placeholder="Enter UPI ID (e.g. mobile@upi)"
-                    value={upiId}
-                    onChange={(e) => setUpiId(e.target.value)}
-                    className="w-full rounded-xl border border-border bg-background p-3 text-xs outline-none focus:border-primary"
-                  />
+                  </div>
+                </div>
+              ) : (
+                /* Desktop: Dynamic QR Code */
+                <div className="space-y-4">
+                  <p className="text-xs text-muted-foreground">
+                    Scan with GPay, PhonePe, Paytm or BHIM
+                  </p>
+                  <div className="mx-auto flex h-48 w-48 items-center justify-center rounded-2xl border border-border bg-white p-2 shadow-inner">
+                    <img src={qrImageUrl} alt="UPI QR Code" className="h-full w-full object-contain" />
+                  </div>
                 </div>
               )}
 
-              <div className="flex items-center gap-2 pt-2 text-[11px] text-muted-foreground">
-                <ShieldCheck className="h-4 w-4 text-green-600" />
-                <span>100% Safe & Secure Payment via UPI</span>
-              </div>
-
-              <div className="flex gap-3 pt-2">
+              <div className="flex gap-2 pt-2">
                 <button
                   type="button"
                   onClick={onCancel}
-                  className="w-1/3 rounded-full border border-border py-3 text-xs font-semibold hover:bg-secondary"
+                  className="w-1/2 rounded-full border border-border py-2.5 text-xs font-semibold hover:bg-secondary"
                 >
                   Cancel
                 </button>
                 <button
                   type="button"
-                  onClick={handlePay}
-                  className="w-2/3 rounded-full bg-primary py-3 text-xs font-semibold uppercase tracking-wider text-primary-foreground hover:opacity-95"
+                  onClick={onSuccess}
+                  className="w-1/2 rounded-full bg-secondary py-2.5 text-xs font-bold text-foreground hover:bg-secondary/80"
                 >
-                  Pay ₹{amount}
+                  I have Paid
                 </button>
               </div>
             </div>
-          )}
-
-          {stage === "PROCESSING" && (
-            <div className="space-y-4 py-8 text-center">
-              <Loader2 className="mx-auto h-12 w-12 animate-spin text-primary" />
-              <h3 className="text-base font-bold">Requesting Payment</h3>
+          ) : (
+            /* Confirming State */
+            <div className="space-y-4 py-6">
+              <Loader2 className="mx-auto h-10 w-10 animate-spin text-primary" />
+              <h3 className="text-sm font-bold">Completing Transaction</h3>
               <p className="text-xs text-muted-foreground">
-                Please approve the payment request of ₹{amount} on your UPI App.
+                Return here after completing payment in your UPI app.
               </p>
-            </div>
-          )}
 
-          {stage === "SUCCESS" && (
-            <div className="space-y-3 py-8 text-center">
-              <CheckCircle2 className="mx-auto h-14 w-14 text-green-600" />
-              <h3 className="text-base font-bold text-green-700">Payment Received!</h3>
-              <p className="text-xs text-muted-foreground">Generating your order receipt...</p>
+              <button
+                type="button"
+                onClick={onSuccess}
+                className="w-full py-3 bg-primary text-primary-foreground rounded-full text-xs font-bold uppercase tracking-wider"
+              >
+                Confirm & View Tracking
+              </button>
             </div>
           )}
         </div>
