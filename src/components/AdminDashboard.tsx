@@ -1,54 +1,86 @@
-import { useEffect, useState } from "react";
-import { Plus, Trash2, ShieldCheck, Package, ShoppingBag } from "lucide-react";
+import { useState, useEffect } from "react";
 import { endpoints } from "@/lib/endpoints";
+import { 
+  Package, 
+  Tag, 
+  ShieldCheck, 
+  Plus, 
+  RefreshCw, 
+  Check, 
+  Flame, 
+  Sparkles, 
+  Trash2,
+  MapPin,
+  Phone,
+  Mail,
+  Eye,
+  ChevronDown,
+  ChevronUp
+} from "lucide-react";
 
 export function AdminDashboard() {
-  const [activeTab, setActiveTab] = useState<"orders" | "inventory">("orders");
-
-  // --- ORDER MANAGEMENT STATE ---
+  const [activeTab, setActiveTab] = useState<"orders" | "products" | "deals">("orders");
   const [orders, setOrders] = useState<any[]>([]);
-  const [loadingOrders, setLoadingOrders] = useState(false);
+  const [products, setProducts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [expandedOrderId, setExpandedOrderId] = useState<string | null>(null);
 
-  // --- INVENTORY / PRODUCT CREATION STATE ---
-  const [name, setName] = useState("");
-  const [category, setCategory] = useState("");
-  const [description, setDescription] = useState("");
-  const [price, setPrice] = useState("");
-  const [mrp, setMrp] = useState("");
-  const [fabric, setFabric] = useState("");
-  const [work, setWork] = useState("");
-  const [detailsText, setDetailsText] = useState("");
-  const [variants, setVariants] = useState([
-    { size: "S", colourName: "Red", colourHex: "#FF0000", stock: 10, sku: "" },
-  ]);
-  const [images, setImages] = useState<FileList | null>(null);
-  const [loadingProduct, setLoadingProduct] = useState(false);
-  const [productMessage, setProductMessage] = useState("");
+  // --- Product Form State ---
+  const [productForm, setProductForm] = useState({
+    name: "",
+    brand: "Dwell Trends",
+    mainCategory: "Women",
+    subCategory: "Kurta Sets",
+    description: "",
+    price: "",
+    mrp: "",
+    fabric: "",
+    work: "",
+    dealType: "None",
+    dealPrice: "",
+  });
+  const [productImages, setProductImages] = useState<FileList | null>(null);
 
-  useEffect(() => {
-    fetchOrders();
-  }, []);
+  // --- Bulk Deal State ---
+  const [selectedProductIds, setSelectedProductIds] = useState<string[]>([]);
+  const [bulkDealType, setBulkDealType] = useState<"None" | "Hot" | "Wow">("Hot");
+  const [bulkDealPrice, setBulkDealPrice] = useState("");
 
-  const fetchOrders = async () => {
-    setLoadingOrders(true);
+  const loadData = async () => {
+    setLoading(true);
     try {
-      const data = await endpoints.getAllOrders();
-      if (data.success) {
-        setOrders(data.orders);
-      }
+      const [ordersRes, productsRes] = await Promise.all([
+        endpoints.getAllOrders?.() || endpoints.getMyOrders(),
+        endpoints.getProducts({}),
+      ]);
+
+      if (ordersRes?.orders) setOrders(ordersRes.orders);
+      if (productsRes?.products) setProducts(productsRes.products);
     } catch (err) {
-      console.error("Failed to load orders", err);
+      console.error("Failed to load admin data:", err);
     } finally {
-      setLoadingOrders(false);
+      setLoading(false);
     }
   };
 
-  const handleStatusChange = async (orderId: string, field: "orderStatus" | "paymentStatus", value: string) => {
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  // --- Order Status Updater ---
+  const handleUpdateOrderStatus = async (orderId: string, orderStatus: string, paymentStatus?: string) => {
     try {
-      const res = await endpoints.updateOrderStatus(orderId, { [field]: value });
+      const res = await endpoints.updateOrderStatus(orderId, {
+        orderStatus,
+        ...(paymentStatus ? { paymentStatus } : {}),
+      });
       if (res.success) {
         setOrders((prev) =>
-          prev.map((o) => (o._id === orderId ? { ...o, [field]: value } : o))
+          prev.map((o) =>
+            o._id === orderId
+              ? { ...o, orderStatus, ...(paymentStatus ? { paymentStatus } : {}) }
+              : o
+          )
         );
       }
     } catch (err) {
@@ -56,390 +88,558 @@ export function AdminDashboard() {
     }
   };
 
-  // --- VARIANT HELPERS ---
-  const addVariant = () => {
-    setVariants([...variants, { size: "M", colourName: "", colourHex: "#000000", stock: 10, sku: "" }]);
+  const toggleExpand = (orderId: string) => {
+    setExpandedOrderId((prev) => (prev === orderId ? null : orderId));
   };
 
-  const removeVariant = (index: number) => {
-    setVariants(variants.filter((_, i) => i !== index));
-  };
-
-  const handleVariantChange = (index: number, field: string, value: any) => {
-    const updated = [...variants];
-    updated[index] = { ...updated[index], [field]: value };
-    setVariants(updated);
-  };
-
-  // --- PRODUCT SUBMIT ---
-  async function handleProductSubmit(e: React.FormEvent) {
+  // --- Create Product Handler ---
+  const handleCreateProduct = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoadingProduct(true);
-    setProductMessage("");
+    if (!productImages || productImages.length === 0) {
+      alert("Please upload at least one image");
+      return;
+    }
+
+    const formData = new FormData();
+    Object.entries(productForm).forEach(([key, value]) => {
+      if (value) formData.append(key, value);
+    });
+
+    Array.from(productImages).forEach((file) => {
+      formData.append("images", file);
+    });
+
+    // Default basic variant
+    formData.append(
+      "variants",
+      JSON.stringify([{ size: "Free Size", colourName: "Standard", colourHex: "#000000", stock: 50 }])
+    );
 
     try {
-      const formData = new FormData();
-      formData.append("name", name);
-      formData.append("category", category);
-      formData.append("description", description);
-      formData.append("price", price);
-      formData.append("mrp", mrp);
-      formData.append("fabric", fabric);
-      formData.append("work", work);
-      formData.append("variants", JSON.stringify(variants));
-
-      const detailsArray = detailsText.split("\n").filter(Boolean);
-      formData.append("details", JSON.stringify(detailsArray));
-
-      if (images) {
-        for (let i = 0; i < images.length; i++) {
-          formData.append("images", images[i]);
-        }
+      setLoading(true);
+      const res = await endpoints.createProduct(formData);
+      if (res.success) {
+        alert("Product created successfully!");
+        setProductForm({
+          name: "",
+          brand: "Dwell Trends",
+          mainCategory: "Women",
+          subCategory: "Kurta Sets",
+          description: "",
+          price: "",
+          mrp: "",
+          fabric: "",
+          work: "",
+          dealType: "None",
+          dealPrice: "",
+        });
+        setProductImages(null);
+        loadData();
       }
+    } catch (err) {
+      alert("Error creating product");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-      const API_URL = import.meta.env.VITE_API_URL || "https://dwell-trends-backend.vercel.app/api/v1";
-      const token = localStorage.getItem("token");
+  // --- Bulk Deal Updater ---
+  const handleApplyDeals = async () => {
+    if (selectedProductIds.length === 0) {
+      alert("Select at least one product.");
+      return;
+    }
 
-      const res = await fetch(`${API_URL}/products`, {
-        method: "POST",
-        headers: {
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-        body: formData,
+    try {
+      setLoading(true);
+      const res = await endpoints.updateDealStatus({
+        productIds: selectedProductIds,
+        dealType: bulkDealType,
+        dealPrice: bulkDealType === "None" ? null : Number(bulkDealPrice),
       });
 
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Failed to create product");
-
-      setProductMessage("Product added successfully to MongoDB & Cloudinary!");
-      setName("");
-      setCategory("");
-      setDescription("");
-      setPrice("");
-      setMrp("");
-      setFabric("");
-      setWork("");
-      setDetailsText("");
-      setImages(null);
-      setVariants([{ size: "S", colourName: "Red", colourHex: "#FF0000", stock: 10, sku: "" }]);
-    } catch (err: any) {
-      setProductMessage(err.message);
+      if (res.success) {
+        alert("Deals updated successfully!");
+        setSelectedProductIds([]);
+        setBulkDealPrice("");
+        loadData();
+      }
+    } catch (err) {
+      alert("Failed to update deals");
     } finally {
-      setLoadingProduct(false);
+      setLoading(false);
     }
-  }
+  };
 
   return (
-    <div className="container-page py-10 max-w-6xl mx-auto space-y-6">
+    <div className="container-page py-10 space-y-8">
       {/* Header & Tabs */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-6">
-        <div className="flex items-center gap-2.5">
-          <ShieldCheck className="h-6 w-6 text-primary" />
-          <div>
-            <h1 className="font-display text-2xl font-bold">Admin Management</h1>
-            <p className="text-xs text-muted-foreground">Manage live orders and product inventory</p>
-          </div>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-5">
+        <div>
+          <h1 className="font-display text-2xl font-bold">Admin Operations</h1>
+          <p className="text-xs text-muted-foreground mt-1">
+            Manage UTR verifications, catalog hierarchy, and flash promotional deals.
+          </p>
         </div>
 
-        {/* Tab Switcher */}
-        <div className="flex bg-secondary/50 p-1 rounded-xl border border-border">
+        <div className="flex items-center gap-2">
           <button
-            type="button"
             onClick={() => setActiveTab("orders")}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold transition-all ${
-              activeTab === "orders" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+            className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold transition-colors ${
+              activeTab === "orders" ? "bg-primary text-primary-foreground" : "bg-secondary text-foreground"
             }`}
           >
-            <ShoppingBag className="h-4 w-4" /> Orders ({orders.length})
+            <ShieldCheck className="h-4 w-4" /> Orders & UTRs
           </button>
           <button
-            type="button"
-            onClick={() => setActiveTab("inventory")}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold transition-all ${
-              activeTab === "inventory" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+            onClick={() => setActiveTab("products")}
+            className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold transition-colors ${
+              activeTab === "products" ? "bg-primary text-primary-foreground" : "bg-secondary text-foreground"
             }`}
           >
             <Package className="h-4 w-4" /> Add Product
           </button>
+          <button
+            onClick={() => setActiveTab("deals")}
+            className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold transition-colors ${
+              activeTab === "deals" ? "bg-primary text-primary-foreground" : "bg-secondary text-foreground"
+            }`}
+          >
+            <Flame className="h-4 w-4" /> Hot / Wow Deals
+          </button>
         </div>
       </div>
 
-      {/* --- TAB 1: ORDER MANAGEMENT --- */}
+      {/* --- TAB 1: ORDERS & UTR VERIFICATION --- */}
       {activeTab === "orders" && (
         <div className="space-y-4">
-          <div className="flex justify-between items-center">
-            <h2 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">Recent Customer Orders</h2>
+          <div className="flex items-center justify-between">
+            <h2 className="font-display text-sm font-bold uppercase tracking-wider text-muted-foreground">
+              Incoming Orders ({orders.length})
+            </h2>
             <button
-              type="button"
-              onClick={fetchOrders}
-              className="text-xs text-primary font-semibold hover:underline"
+              onClick={loadData}
+              className="flex items-center gap-1.5 px-3 py-1.5 border border-border rounded-lg text-xs font-semibold hover:bg-secondary"
             >
-              Refresh Orders
+              <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin" : ""}`} /> Refresh
             </button>
           </div>
 
-          {loadingOrders ? (
-            <div className="p-12 text-center text-xs text-muted-foreground">Loading orders...</div>
-          ) : orders.length === 0 ? (
-            <div className="p-12 text-center text-xs text-muted-foreground bg-card rounded-2xl border border-border">
-              No orders found.
-            </div>
-          ) : (
-            <div className="bg-card border border-border rounded-2xl overflow-x-auto shadow-sm">
-              <table className="w-full text-left text-xs whitespace-nowrap">
-                <thead className="bg-secondary/40 text-muted-foreground border-b border-border">
+          <div className="overflow-x-auto border border-border rounded-2xl bg-card">
+            <table className="w-full text-left text-xs">
+              <thead className="bg-secondary/40 text-muted-foreground uppercase text-[10px] tracking-wider border-b border-border">
+                <tr>
+                  <th className="p-4">Order ID & Date</th>
+                  <th className="p-4">Customer & Full Address</th>
+                  <th className="p-4">Amount</th>
+                  <th className="p-4">Customer UTR Ref</th>
+                  <th className="p-4">Tokens</th>
+                  <th className="p-4">Payment</th>
+                  <th className="p-4">Status</th>
+                  <th className="p-4 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border">
+                {orders.length === 0 ? (
                   <tr>
-                    <th className="px-4 py-3 font-semibold">Order ID & Date</th>
-                    <th className="px-4 py-3 font-semibold">Customer Details</th>
-                    <th className="px-4 py-3 font-semibold">Items</th>
-                    <th className="px-4 py-3 font-semibold">Total Amount</th>
-                    <th className="px-4 py-3 font-semibold">Payment & UTR</th>
-                    <th className="px-4 py-3 font-semibold">Fulfillment Status</th>
+                    <td colSpan={8} className="p-8 text-center text-muted-foreground text-xs">
+                      {loading ? "Loading order records..." : "No orders found."}
+                    </td>
                   </tr>
-                </thead>
-                <tbody className="divide-y divide-border">
-                  {orders.map((order) => (
-                    <tr key={order._id} className="hover:bg-secondary/10 transition-colors">
-                      <td className="px-4 py-4">
-                        <span className="font-bold block text-primary">#{order._id.slice(-6).toUpperCase()}</span>
-                        <span className="text-[10px] text-muted-foreground">
-                          {new Date(order.createdAt).toLocaleDateString("en-IN", { dateStyle: "medium" })}
-                        </span>
-                      </td>
-                      <td className="px-4 py-4">
-                        <span className="block font-medium">{order.shippingAddress?.fullName || "Guest"}</span>
-                        <span className="text-muted-foreground text-[10px]">
-                          {order.shippingAddress?.phone} · {order.shippingAddress?.city}
-                        </span>
-                      </td>
-                      <td className="px-4 py-4 text-[11px] text-muted-foreground">
-                        {order.items?.length || 0} item(s)
-                      </td>
-                      <td className="px-4 py-4 font-bold text-foreground">₹{order.finalTotal}</td>
-                      <td className="px-4 py-4">
-                        <div className="space-y-1">
+                ) : (
+                  orders.map((order) => {
+                    const addr = order.shippingAddress || {};
+                    const isExpanded = expandedOrderId === order._id;
+
+                    return (
+                      <tr key={order._id} className="hover:bg-secondary/10 transition-colors align-top">
+                        {/* 1. Order ID & Date */}
+                        <td className="p-4 whitespace-nowrap space-y-1">
+                          <span className="font-mono font-bold text-foreground">
+                            #{order._id.slice(-6).toUpperCase()}
+                          </span>
+                          <span className="block text-[10px] text-muted-foreground">
+                            {new Date(order.createdAt).toLocaleDateString("en-IN")}
+                          </span>
+                          <button
+                            onClick={() => toggleExpand(order._id)}
+                            className="flex items-center gap-1 text-[10px] text-primary font-bold hover:underline pt-1"
+                          >
+                            <Eye className="h-3 w-3" /> {isExpanded ? "Hide Items" : `View Items (${order.items?.length || 0})`}
+                          </button>
+                        </td>
+
+                        {/* 2. Customer Details & Full Address */}
+                        <td className="p-4 min-w-[240px] space-y-1">
+                          <p className="font-bold text-foreground text-xs">
+                            {addr.fullName || order.user?.name || "Guest User"}
+                          </p>
+
+                          {/* Full House No., Street, City, State, PIN */}
+                          <div className="flex items-start gap-1.5 text-[11px] text-foreground/85">
+                            <MapPin className="h-3.5 w-3.5 text-primary shrink-0 mt-0.5" />
+                            <div>
+                              <p className="leading-snug">{addr.street || "No street provided"}</p>
+                              <p className="text-muted-foreground font-medium">
+                                {addr.city ? `${addr.city}, ` : ""}{addr.state || ""} 
+                                {addr.pinCode ? ` - ${addr.pinCode}` : ""}
+                              </p>
+                            </div>
+                          </div>
+
+                          {/* Contact Phone & Email */}
+                          <div className="pt-1 flex flex-col gap-0.5 text-[10px] text-muted-foreground">
+                            {(addr.phone || order.user?.phone) && (
+                              <span className="flex items-center gap-1">
+                                <Phone className="h-3 w-3" />
+                                {addr.phone || order.user?.phone}
+                              </span>
+                            )}
+                            {(addr.email || order.guestEmail || order.user?.email) && (
+                              <span className="flex items-center gap-1">
+                                <Mail className="h-3 w-3" />
+                                {addr.email || order.guestEmail || order.user?.email}
+                              </span>
+                            )}
+                          </div>
+                        </td>
+
+                        {/* 3. Amount */}
+                        <td className="p-4 whitespace-nowrap">
+                          <span className="font-bold text-foreground text-sm">₹{order.finalTotal}</span>
+                          {order.tokensUsed > 0 && (
+                            <p className="text-[10px] text-amber-700 font-semibold">
+                              (Saved ₹{order.tokensUsed} tokens)
+                            </p>
+                          )}
+                        </td>
+
+                        {/* 4. Customer UTR */}
+                        <td className="p-4">
+                          {order.paymentUtr ? (
+                            <span className="font-mono font-bold bg-secondary/80 px-2.5 py-1 rounded-md text-[11px] text-primary border border-border">
+                              {order.paymentUtr}
+                            </span>
+                          ) : (
+                            <span className="text-[11px] text-muted-foreground italic">Pending UTR</span>
+                          )}
+                        </td>
+
+                        {/* 5. Tokens */}
+                        <td className="p-4 whitespace-nowrap font-semibold text-primary">
+                          +{order.tokensEarned || 0} tokens
+                        </td>
+
+                        {/* 6. Payment Status Dropdown */}
+                        <td className="p-4 whitespace-nowrap">
                           <select
                             value={order.paymentStatus}
-                            onChange={(e) => handleStatusChange(order._id, "paymentStatus", e.target.value)}
-                            className={`text-[11px] font-bold p-1 rounded-lg border outline-none cursor-pointer ${
+                            onChange={(e) => handleUpdateOrderStatus(order._id, order.orderStatus, e.target.value)}
+                            className={`p-1.5 rounded-lg text-xs font-bold border outline-none ${
                               order.paymentStatus === "Paid"
-                                ? "bg-green-50 text-green-700 border-green-200"
-                                : "bg-amber-50 text-amber-700 border-amber-200"
+                                ? "bg-green-500/10 text-green-700 border-green-500/30"
+                                : "bg-amber-500/10 text-amber-700 border-amber-500/30"
                             }`}
                           >
                             <option value="Pending">Pending</option>
                             <option value="Paid">Paid</option>
                             <option value="Failed">Failed</option>
                           </select>
-                          {order.paymentUtr ? (
-                            <div className="text-[10px] font-mono text-muted-foreground">
-                              UTR: <span className="font-bold text-foreground">{order.paymentUtr}</span>
-                            </div>
-                          ) : (
-                            <div className="text-[10px] text-amber-600 font-medium italic">
-                              UTR not submitted
-                            </div>
+                        </td>
+
+                        {/* 7. Fulfillment Status Dropdown */}
+                        <td className="p-4 whitespace-nowrap">
+                          <select
+                            value={order.orderStatus}
+                            onChange={(e) => handleUpdateOrderStatus(order._id, e.target.value)}
+                            className="p-1.5 bg-secondary/50 border border-border rounded-lg text-xs font-semibold outline-none focus:border-primary"
+                          >
+                            <option value="Placed">Placed</option>
+                            <option value="Confirmed">Confirmed</option>
+                            <option value="Processing">Processing</option>
+                            <option value="Shipped">Shipped</option>
+                            <option value="Delivered">Delivered</option>
+                            <option value="Cancelled">Cancelled</option>
+                          </select>
+                        </td>
+
+                        {/* 8. Action Buttons */}
+                        <td className="p-4 text-right space-x-2 whitespace-nowrap">
+                          {order.paymentStatus !== "Paid" && (
+                            <button
+                              onClick={() => handleUpdateOrderStatus(order._id, "Confirmed", "Paid")}
+                              className="px-3 py-1.5 bg-green-600 text-white rounded-lg text-[11px] font-bold hover:bg-green-700 transition-colors"
+                            >
+                              Approve
+                            </button>
                           )}
-                        </div>
-                      </td>
-                      <td className="px-4 py-4">
-                        <select
-                          value={order.orderStatus}
-                          onChange={(e) => handleStatusChange(order._id, "orderStatus", e.target.value)}
-                          className="text-[11px] font-semibold p-1.5 rounded-lg border border-border bg-background outline-none focus:border-primary cursor-pointer"
-                        >
-                          <option value="Processing">Processing</option>
-                          <option value="Confirmed">Confirmed</option>
-                          <option value="Shipped">Shipped</option>
-                          <option value="Delivered">Delivered</option>
-                          <option value="Cancelled">Cancelled</option>
-                        </select>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
+                          <button
+                            onClick={() => toggleExpand(order._id)}
+                            className="p-1.5 hover:bg-secondary rounded-lg text-muted-foreground hover:text-foreground inline-flex items-center"
+                            title="Expand Products"
+                          >
+                            {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
+              </tbody>
+            </table>
+
+            {/* Expandable Order Product Items Drawer */}
+            {expandedOrderId && (
+              <div className="border-t border-border bg-secondary/20 p-5 space-y-3">
+                {(() => {
+                  const current = orders.find((o) => o._id === expandedOrderId);
+                  if (!current) return null;
+
+                  return (
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <h4 className="font-display text-xs font-bold uppercase tracking-wider text-foreground">
+                          Ordered Items for #{current._id.slice(-6).toUpperCase()}
+                        </h4>
+                        <span className="text-xs text-muted-foreground">
+                          Shipping: {current.shippingFee === 0 ? "Free" : `₹${current.shippingFee}`}
+                        </span>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                        {current.items?.map((item: any, i: number) => (
+                          <div key={i} className="flex gap-3 p-3 bg-card border border-border rounded-xl">
+                            <img
+                              src={item.image}
+                              alt=""
+                              className="h-14 w-12 rounded-lg object-cover bg-secondary border border-border"
+                            />
+                            <div className="flex-1 min-w-0 text-xs">
+                              <p className="font-bold truncate text-foreground">{item.name}</p>
+                              <p className="text-[11px] text-muted-foreground">
+                                Size: {item.selectedSize} · Colour: {item.selectedColour}
+                              </p>
+                              <p className="text-xs font-bold text-primary mt-1">
+                                ₹{item.price} × {item.qty} = ₹{item.price * item.qty}
+                              </p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })()}
+              </div>
+            )}
+          </div>
         </div>
       )}
 
-      {/* --- TAB 2: INVENTORY PRODUCT CREATION --- */}
-      {activeTab === "inventory" && (
-        <div className="max-w-4xl mx-auto space-y-4">
-          {productMessage && (
-            <div
-              className={`p-4 rounded-xl text-xs font-medium ${
-                productMessage.includes("success")
-                  ? "bg-green-500/10 text-green-600 border border-green-500/20"
-                  : "bg-destructive/10 text-destructive border border-destructive/20"
-              }`}
-            >
-              {productMessage}
-            </div>
-          )}
+      {/* --- TAB 2: PRODUCT CREATION --- */}
+      {activeTab === "products" && (
+        <form onSubmit={handleCreateProduct} className="max-w-2xl bg-card border border-border p-6 rounded-2xl space-y-4">
+          <h2 className="font-display text-base font-bold">Add New Product to Catalog</h2>
 
-          <form onSubmit={handleProductSubmit} className="space-y-6 bg-card border border-border p-8 rounded-2xl shadow-sm">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="text-xs font-medium mb-1 block">Product Name</label>
-                <input
-                  required
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="h-10 w-full rounded-lg border border-border bg-secondary/30 px-3 text-xs outline-none focus:border-primary"
-                />
-              </div>
-              <div>
-                <label className="text-xs font-medium mb-1 block">Category</label>
-                <input
-                  required
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                  placeholder="e.g. kurtis, lehengas"
-                  className="h-10 w-full rounded-lg border border-border bg-secondary/30 px-3 text-xs outline-none focus:border-primary"
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <label className="text-xs font-medium mb-1 block">Selling Price (₹)</label>
-                <input
-                  required
-                  type="number"
-                  value={price}
-                  onChange={(e) => setPrice(e.target.value)}
-                  className="h-10 w-full rounded-lg border border-border bg-secondary/30 px-3 text-xs outline-none focus:border-primary"
-                />
-              </div>
-              <div>
-                <label className="text-xs font-medium mb-1 block">MRP (₹)</label>
-                <input
-                  required
-                  type="number"
-                  value={mrp}
-                  onChange={(e) => setMrp(e.target.value)}
-                  className="h-10 w-full rounded-lg border border-border bg-secondary/30 px-3 text-xs outline-none focus:border-primary"
-                />
-              </div>
-              <div>
-                <label className="text-xs font-medium mb-1 block">Upload Images (Max 5)</label>
-                <input
-                  type="file"
-                  multiple
-                  onChange={(e) => setImages(e.target.files)}
-                  className="text-xs file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-primary file:text-primary-foreground hover:file:opacity-90 cursor-pointer"
-                />
-              </div>
-            </div>
-
+          <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="text-xs font-medium mb-1 block">Description</label>
-              <textarea
+              <label className="text-[11px] font-bold uppercase text-muted-foreground">Product Title</label>
+              <input
+                type="text"
                 required
-                rows={3}
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                className="w-full rounded-lg border border-border bg-secondary/30 p-3 text-xs outline-none focus:border-primary"
+                value={productForm.name}
+                onChange={(e) => setProductForm({ ...productForm, name: e.target.value })}
+                placeholder="e.g. Embroidered Velvet Kurta Set"
+                className="w-full mt-1 p-2.5 bg-secondary/30 border border-border rounded-xl text-xs outline-none focus:border-primary"
               />
             </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="text-xs font-medium mb-1 block">Fabric</label>
-                <input
-                  value={fabric}
-                  onChange={(e) => setFabric(e.target.value)}
-                  placeholder="e.g. Pure Silk"
-                  className="h-10 w-full rounded-lg border border-border bg-secondary/30 px-3 text-xs outline-none focus:border-primary"
-                />
-              </div>
-              <div>
-                <label className="text-xs font-medium mb-1 block">Work Type</label>
-                <input
-                  value={work}
-                  onChange={(e) => setWork(e.target.value)}
-                  placeholder="e.g. Zari Embroidery"
-                  className="h-10 w-full rounded-lg border border-border bg-secondary/30 px-3 text-xs outline-none focus:border-primary"
-                />
-              </div>
-            </div>
-
             <div>
-              <label className="text-xs font-medium mb-1 block">Bullet Details (One per line)</label>
-              <textarea
-                rows={2}
-                value={detailsText}
-                onChange={(e) => setDetailsText(e.target.value)}
-                placeholder="Dry clean only&#10;Made in India"
-                className="w-full rounded-lg border border-border bg-secondary/30 p-3 text-xs outline-none focus:border-primary"
+              <label className="text-[11px] font-bold uppercase text-muted-foreground">Brand</label>
+              <input
+                type="text"
+                value={productForm.brand}
+                onChange={(e) => setProductForm({ ...productForm, brand: e.target.value })}
+                placeholder="Dwell Trends"
+                className="w-full mt-1 p-2.5 bg-secondary/30 border border-border rounded-xl text-xs outline-none focus:border-primary"
               />
             </div>
+          </div>
 
-            {/* Variant Stock Manager */}
-            <div className="border-t border-border pt-4">
-              <div className="flex justify-between items-center mb-3">
-                <h3 className="text-xs font-bold uppercase tracking-wider">Size & Color Variants (Inventory)</h3>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="text-[11px] font-bold uppercase text-muted-foreground">Main Category (Myntra Tiers)</label>
+              <select
+                value={productForm.mainCategory}
+                onChange={(e) => setProductForm({ ...productForm, mainCategory: e.target.value })}
+                className="w-full mt-1 p-2.5 bg-secondary/30 border border-border rounded-xl text-xs outline-none focus:border-primary font-semibold"
+              >
+                <option value="Women">Women</option>
+                <option value="Men">Men</option>
+                <option value="Kids">Kids</option>
+                <option value="Beauty">Beauty</option>
+                <option value="Home">Home</option>
+              </select>
+            </div>
+            <div>
+              <label className="text-[11px] font-bold uppercase text-muted-foreground">Sub-Category</label>
+              <input
+                type="text"
+                required
+                value={productForm.subCategory}
+                onChange={(e) => setProductForm({ ...productForm, subCategory: e.target.value })}
+                placeholder="e.g. Sarees, T-Shirts, Dresses"
+                className="w-full mt-1 p-2.5 bg-secondary/30 border border-border rounded-xl text-xs outline-none focus:border-primary"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="text-[11px] font-bold uppercase text-muted-foreground">Regular Selling Price (₹)</label>
+              <input
+                type="number"
+                required
+                value={productForm.price}
+                onChange={(e) => setProductForm({ ...productForm, price: e.target.value })}
+                placeholder="499"
+                className="w-full mt-1 p-2.5 bg-secondary/30 border border-border rounded-xl text-xs outline-none focus:border-primary"
+              />
+            </div>
+            <div>
+              <label className="text-[11px] font-bold uppercase text-muted-foreground">MRP (Crossed Out Price)</label>
+              <input
+                type="number"
+                required
+                value={productForm.mrp}
+                onChange={(e) => setProductForm({ ...productForm, mrp: e.target.value })}
+                placeholder="1999"
+                className="w-full mt-1 p-2.5 bg-secondary/30 border border-border rounded-xl text-xs outline-none focus:border-primary"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="text-[11px] font-bold uppercase text-muted-foreground">Description</label>
+            <textarea
+              rows={3}
+              value={productForm.description}
+              onChange={(e) => setProductForm({ ...productForm, description: e.target.value })}
+              placeholder="Provide product fabric details, fit, and style guidance..."
+              className="w-full mt-1 p-2.5 bg-secondary/30 border border-border rounded-xl text-xs outline-none focus:border-primary"
+            />
+          </div>
+
+          <div>
+            <label className="text-[11px] font-bold uppercase text-muted-foreground">Product Images (Cloudinary)</label>
+            <input
+              type="file"
+              multiple
+              accept="image/*"
+              onChange={(e) => setProductImages(e.target.files)}
+              className="w-full mt-1 p-2 bg-secondary/30 border border-border rounded-xl text-xs"
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full py-3 bg-primary text-primary-foreground rounded-xl text-xs font-bold uppercase tracking-wider hover:opacity-95 disabled:opacity-50"
+          >
+            {loading ? "Uploading to Catalog..." : "Create Product"}
+          </button>
+        </form>
+      )}
+
+      {/* --- TAB 3: DEAL & FLASH SALE ENGINE --- */}
+      {activeTab === "deals" && (
+        <div className="space-y-6">
+          <div className="bg-card border border-border p-6 rounded-2xl space-y-4">
+            <h2 className="font-display text-base font-bold flex items-center gap-2">
+              <Sparkles className="h-5 w-5 text-amber-500" /> Flipkart / Myntra Flash Deal Configurator
+            </h2>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div>
+                <label className="text-[11px] font-bold uppercase text-muted-foreground">Target Deal Type</label>
+                <select
+                  value={bulkDealType}
+                  onChange={(e: any) => setBulkDealType(e.target.value)}
+                  className="w-full mt-1 p-2.5 bg-secondary/30 border border-border rounded-xl text-xs outline-none focus:border-primary font-semibold"
+                >
+                  <option value="Hot">🔥 Hot Deal (Card Tag)</option>
+                  <option value="Wow">⚡ Wow Deal (Blue Banner & Discount)</option>
+                  <option value="None">None (Remove Deal Status)</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="text-[11px] font-bold uppercase text-muted-foreground">Override Deal Price (₹)</label>
+                <input
+                  type="number"
+                  disabled={bulkDealType === "None"}
+                  value={bulkDealPrice}
+                  onChange={(e) => setBulkDealPrice(e.target.value)}
+                  placeholder={bulkDealType === "None" ? "N/A" : "e.g. 299"}
+                  className="w-full mt-1 p-2.5 bg-secondary/30 border border-border rounded-xl text-xs outline-none focus:border-primary disabled:opacity-50"
+                />
+              </div>
+
+              <div className="flex items-end">
                 <button
                   type="button"
-                  onClick={addVariant}
-                  className="flex items-center gap-1 text-xs text-primary font-medium hover:underline"
+                  disabled={loading || selectedProductIds.length === 0}
+                  onClick={handleApplyDeals}
+                  className="w-full py-2.5 bg-primary text-primary-foreground rounded-xl text-xs font-bold uppercase tracking-wider hover:opacity-95 disabled:opacity-50"
                 >
-                  <Plus className="h-3.5 w-3.5" /> Add Variant
+                  Apply to {selectedProductIds.length} Products
                 </button>
               </div>
-
-              <div className="space-y-3">
-                {variants.map((v, index) => (
-                  <div key={index} className="flex items-center gap-2 bg-secondary/20 p-3 rounded-lg border border-border">
-                    <input
-                      placeholder="Size (e.g. S, M, L)"
-                      value={v.size}
-                      onChange={(e) => handleVariantChange(index, "size", e.target.value)}
-                      className="h-9 w-24 rounded border border-border bg-card px-2 text-xs"
-                    />
-                    <input
-                      placeholder="Color Name"
-                      value={v.colourName}
-                      onChange={(e) => handleVariantChange(index, "colourName", e.target.value)}
-                      className="h-9 w-28 rounded border border-border bg-card px-2 text-xs"
-                    />
-                    <input
-                      type="color"
-                      value={v.colourHex}
-                      onChange={(e) => handleVariantChange(index, "colourHex", e.target.value)}
-                      className="h-9 w-12 rounded border border-border bg-card p-1 cursor-pointer"
-                    />
-                    <input
-                      placeholder="Stock Qty"
-                      type="number"
-                      value={v.stock}
-                      onChange={(e) => handleVariantChange(index, "stock", Number(e.target.value))}
-                      className="h-9 w-24 rounded border border-border bg-card px-2 text-xs"
-                    />
-                    {variants.length > 1 && (
-                      <button
-                        type="button"
-                        onClick={() => removeVariant(index)}
-                        className="text-destructive hover:opacity-80 p-2"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
-                    )}
-                  </div>
-                ))}
-              </div>
             </div>
+          </div>
 
-            <button
-              type="submit"
-              disabled={loadingProduct}
-              className="w-full py-3.5 bg-primary text-primary-foreground rounded-full text-xs font-semibold uppercase tracking-wider hover:opacity-95 disabled:opacity-50 transition-all shadow-md"
-            >
-              {loadingProduct ? "Uploading to Cloudinary & Saving..." : "Publish Product"}
-            </button>
-          </form>
+          {/* Product Picker Grid */}
+          <div className="space-y-3">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+              Select Products to Update Deals
+            </h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {products.map((p) => {
+                const isSelected = selectedProductIds.includes(p._id);
+                return (
+                  <div
+                    key={p._id}
+                    onClick={() => {
+                      setSelectedProductIds((prev) =>
+                        isSelected ? prev.filter((id) => id !== p._id) : [...prev, p._id]
+                      );
+                    }}
+                    className={`cursor-pointer rounded-2xl border p-3 flex gap-3 transition-all ${
+                      isSelected
+                        ? "border-primary bg-primary/5 shadow-md"
+                        : "border-border bg-card hover:border-muted-foreground"
+                    }`}
+                  >
+                    <img
+                      src={p.images?.[0]?.url}
+                      alt=""
+                      className="h-16 w-14 rounded-lg object-cover bg-secondary"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-bold truncate">{p.name}</p>
+                      <p className="text-[10px] text-muted-foreground">{p.mainCategory} · {p.subCategory}</p>
+                      <div className="flex items-baseline gap-1.5 mt-1">
+                        <span className="text-xs font-bold text-primary">₹{p.price}</span>
+                        {p.dealType !== "None" && (
+                          <span className="text-[10px] font-bold text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded">
+                            {p.dealType} (₹{p.dealPrice})
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
         </div>
       )}
     </div>
