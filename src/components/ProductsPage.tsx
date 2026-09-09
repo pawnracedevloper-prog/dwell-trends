@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useSearch, useNavigate } from "@tanstack/react-router";
 import { endpoints, ProductQueryParams } from "@/lib/endpoints";
 import { ProductCard } from "@/components/ProductCard";
-import { SlidersHorizontal, RefreshCw, X, ChevronDown } from "lucide-react";
+import { SlidersHorizontal, RefreshCw, X, ChevronDown, Sparkles } from "lucide-react";
 
 const MAIN_CATEGORIES = ["All", "Women", "Men", "Kids", "Beauty", "Home"];
 
@@ -82,29 +82,30 @@ export function ProductsPage() {
   };
 
   return (
-    <div className="container-page py-10 space-y-8">
+    <div className="container-page py-10 space-y-8 min-h-screen text-foreground">
       {/* Header & Filter Controls */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border pb-6">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border/80 pb-6">
         <div>
-          <h1 className="font-display text-2xl sm:text-3xl font-bold">
-            {currentMainCategory === "All" ? "Complete Catalog" : `${currentMainCategory}'s Collection`}
+          <h1 className="font-display text-2xl sm:text-3xl font-black tracking-tight glam-gradient-text flex items-center gap-2">
+            <span>{currentMainCategory === "All" ? "Complete Collection" : `${currentMainCategory}'s Edit`}</span>
+            <span className="text-primary text-sm">✦</span>
           </h1>
-          <p className="text-xs text-muted-foreground mt-1">
-            Showing {products.length} {products.length === 1 ? "style" : "styles"} found
+          <p className="text-xs text-muted-foreground mt-1 font-medium">
+            Showing <span className="text-rose-soft font-bold">{products.length}</span> {products.length === 1 ? "statement piece" : "statement pieces"} curated
           </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
           {/* Main Category Pills */}
-          <div className="flex items-center gap-1.5 overflow-x-auto bg-secondary/40 p-1 rounded-xl border border-border">
+          <div className="flex items-center gap-1.5 overflow-x-auto bg-[#14171e]/90 p-1.5 rounded-2xl border border-border/80 shadow-md backdrop-blur-md">
             {MAIN_CATEGORIES.map((cat) => (
               <button
                 key={cat}
                 onClick={() => handleCategoryChange(cat)}
-                className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-colors ${
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all ${
                   currentMainCategory === cat
-                    ? "bg-primary text-primary-foreground shadow-xs"
-                    : "text-muted-foreground hover:text-foreground"
+                    ? "bg-primary text-white glam-glow shadow-md"
+                    : "text-muted-foreground hover:text-foreground hover:bg-secondary/60"
                 }`}
               >
                 {cat}
@@ -116,9 +117,9 @@ export function ProductsPage() {
           <select
             value={sortBy}
             onChange={(e: any) => setSortBy(e.target.value)}
-            className="p-2 bg-card border border-border rounded-xl text-xs font-semibold outline-none focus:border-primary"
+            className="p-2.5 bg-[#14171e]/90 border border-border/80 rounded-2xl text-xs font-bold text-foreground outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 shadow-md backdrop-blur-md"
           >
-            <option value="newest">Featured & Newest</option>
+            <option value="newest">Featured & Newest Drops</option>
             <option value="price-asc">Price: Low to High</option>
             <option value="price-desc">Price: High to Low</option>
           </select>
@@ -128,25 +129,27 @@ export function ProductsPage() {
       {/* Active Filter Badges */}
       {(currentMainCategory !== "All" || currentDealType || currentMaxPrice || subCategoryFilter) && (
         <div className="flex items-center gap-2 flex-wrap text-xs">
-          <span className="text-muted-foreground font-semibold">Active Filters:</span>
+          <span className="text-muted-foreground font-black uppercase tracking-widest text-[10px] flex items-center gap-1">
+            <Sparkles className="h-3 w-3 text-primary" /> Active Filters:
+          </span>
           {currentMainCategory !== "All" && (
-            <span className="bg-secondary px-2.5 py-1 rounded-lg border border-border flex items-center gap-1 font-medium">
-              Category: {currentMainCategory}
+            <span className="bg-secondary/80 text-rose-soft px-3 py-1 rounded-full border border-primary/30 flex items-center gap-1.5 font-bold shadow-xs">
+              <span className="text-[10px]">✦</span> Category: {currentMainCategory}
             </span>
           )}
           {currentDealType && (
-            <span className="bg-amber-500/10 text-amber-700 border border-amber-500/20 px-2.5 py-1 rounded-lg font-bold">
-              Deal: {currentDealType} Deals
+            <span className="bg-primary/15 text-rose-soft border border-primary/40 px-3 py-1 rounded-full font-black uppercase tracking-wider glam-glow">
+              Deal: {currentDealType}
             </span>
           )}
           {currentMaxPrice && (
-            <span className="bg-secondary px-2.5 py-1 rounded-lg border border-border font-medium">
-              Max Price: ₹{currentMaxPrice}
+            <span className="bg-secondary/80 text-foreground px-3 py-1 rounded-full border border-border/80 font-bold">
+              Under ₹{currentMaxPrice}
             </span>
           )}
           <button
             onClick={handleClearFilters}
-            className="text-xs text-primary font-bold hover:underline flex items-center gap-1 ml-2"
+            className="text-xs text-primary font-black uppercase tracking-wider hover:underline flex items-center gap-1 ml-2 transition-all hover:scale-105"
           >
             <X className="h-3.5 w-3.5" /> Clear All
           </button>
@@ -155,19 +158,19 @@ export function ProductsPage() {
 
       {/* Product Grid */}
       {loading ? (
-        <div className="py-24 text-center space-y-3">
-          <RefreshCw className="h-6 w-6 animate-spin mx-auto text-primary" />
-          <p className="text-xs text-muted-foreground">Filtering styles...</p>
+        <div className="py-28 text-center space-y-3">
+          <RefreshCw className="h-7 w-7 animate-spin mx-auto text-primary" />
+          <p className="text-xs text-muted-foreground font-bold tracking-widest uppercase">Filtering Drops...</p>
         </div>
       ) : products.length === 0 ? (
-        <div className="text-center py-20 border border-dashed border-border rounded-2xl space-y-3">
-          <p className="font-display text-base font-bold">No products found</p>
-          <p className="text-xs text-muted-foreground">
-            No items matched "{currentMainCategory}". Try adjusting your filters.
+        <div className="text-center py-20 border border-dashed border-border/80 bg-[#14171e]/50 backdrop-blur-md rounded-3xl space-y-4 max-w-md mx-auto">
+          <p className="font-display text-lg font-black glam-gradient-text">No Styles Found</p>
+          <p className="text-xs text-muted-foreground leading-relaxed px-4">
+            No items matched your active selections for "{currentMainCategory}". Adjust your filters to discover more.
           </p>
           <button
             onClick={handleClearFilters}
-            className="px-4 py-2 bg-primary text-primary-foreground rounded-xl text-xs font-bold"
+            className="px-6 py-2.5 bg-primary text-white rounded-xl text-xs font-black uppercase tracking-wider glam-glow hover:opacity-95 transition-all"
           >
             Reset Filters
           </button>

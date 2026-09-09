@@ -3,12 +3,10 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* Keep your @theme inline and all other CSS exactly as it is below this */
-
 /*
- * Saanvi Fashion design system.
- * Premium Indian fashion retail: warm ivory canvas, maroon primary,
- * rose accents, gold highlights. All colours in oklch.
+ * Dwell Trends Luxury Cyber-Glam Design System
+ * Palette: Slate Grey & Charcoal Architecture, Cyber Hot Pink Primary,
+ * Orchid Rose Accents, Platinum Highlights. All colours in oklch.
  */
 
 @theme inline {
@@ -59,85 +57,98 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
-  --shadow-card: 0 1px 2px oklch(0.3 0.06 12 / 0.04), 0 8px 24px -12px oklch(0.3 0.06 12 / 0.14);
-  --shadow-lift: 0 2px 6px oklch(0.3 0.06 12 / 0.06), 0 20px 40px -18px oklch(0.3 0.06 12 / 0.24);
-  --shadow-bar: 0 1px 0 oklch(0.3 0.06 12 / 0.06), 0 6px 20px -16px oklch(0.3 0.06 12 / 0.4);
+  --shadow-card: 0 4px 20px -2px oklch(0.65 0.28 355 / 0.12), 0 2px 8px -2px oklch(0.2 0.02 260 / 0.1);
+  --shadow-lift: 0 10px 30px -4px oklch(0.65 0.28 355 / 0.24), 0 4px 12px oklch(0.2 0.02 260 / 0.1);
+  --shadow-bar: 0 2px 16px -2px oklch(0.65 0.28 355 / 0.18);
 }
 
 :root {
-  --radius: 0.75rem;
-  --background: oklch(0.995 0.003 60);
-  --foreground: oklch(0.235 0.026 20);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.235 0.026 20);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.235 0.026 20);
-  --primary: oklch(0.372 0.113 8.5);
-  --primary-foreground: oklch(0.985 0.008 60);
-  --secondary: oklch(0.963 0.014 20);
-  --secondary-foreground: oklch(0.372 0.113 8.5);
-  --muted: oklch(0.965 0.007 40);
-  --muted-foreground: oklch(0.525 0.021 20);
-  --accent: oklch(0.945 0.032 8);
-  --accent-foreground: oklch(0.372 0.113 8.5);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.985 0.008 60);
-  --border: oklch(0.918 0.011 30);
-  --input: oklch(0.918 0.011 30);
-  --ring: oklch(0.62 0.117 5);
-  --rose-deep: oklch(0.62 0.135 5);
-  --rose-soft: oklch(0.93 0.038 6);
-  --gold: oklch(0.74 0.108 78);
-  --success: oklch(0.55 0.12 152);
-  --sale: oklch(0.55 0.19 24);
-  --chart-1: oklch(0.62 0.135 5);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.74 0.108 78);
-  --chart-4: oklch(0.372 0.113 8.5);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0.008 60);
-  --sidebar-foreground: oklch(0.235 0.026 20);
-  --sidebar-primary: oklch(0.372 0.113 8.5);
-  --sidebar-primary-foreground: oklch(0.985 0.008 60);
-  --sidebar-accent: oklch(0.945 0.032 8);
-  --sidebar-accent-foreground: oklch(0.372 0.113 8.5);
-  --sidebar-border: oklch(0.918 0.011 30);
-  --sidebar-ring: oklch(0.62 0.117 5);
+  --radius: 0.85rem;
+  /* Dark Slate / Charcoal Architectural Canvas */
+  --background: oklch(0.12 0.015 260);        /* Deep Slate Metal */
+  --foreground: oklch(0.97 0.01 340);          /* Crisp Platinum White */
+  
+  --card: oklch(0.16 0.02 260);                /* Frosted Slate Card */
+  --card-foreground: oklch(0.98 0.01 340);
+  
+  --popover: oklch(0.18 0.025 260);
+  --popover-foreground: oklch(0.98 0.01 340);
+  
+  /* Cyber Hot Pink & Girlish Orchid Tones */
+  --primary: oklch(0.65 0.28 355);             /* Electric Hot Pink (#FF2A85) */
+  --primary-foreground: oklch(0.99 0.005 340);
+  
+  --secondary: oklch(0.22 0.03 270);           /* Slate Muted Charcoal */
+  --secondary-foreground: oklch(0.88 0.12 345);/* Muted Orchid Pink */
+  
+  --muted: oklch(0.20 0.025 265);
+  --muted-foreground: oklch(0.72 0.04 270);    /* Metallic Silver Grey */
+  
+  --accent: oklch(0.26 0.05 340);              /* Soft Violet-Pink Sheen */
+  --accent-foreground: oklch(0.92 0.14 345);
+  
+  --destructive: oklch(0.58 0.24 25);
+  --destructive-foreground: oklch(0.99 0.005 340);
+  
+  --border: oklch(0.30 0.04 330 / 35%);        /* Platinum-Pink Hairline Border */
+  --input: oklch(0.22 0.03 270);
+  --ring: oklch(0.65 0.28 355);
+  
+  --rose-deep: oklch(0.55 0.26 350);           /* Crimson Fuchsia */
+  --rose-soft: oklch(0.85 0.12 345);           /* Bubblegum / Pastel Blush */
+  --gold: oklch(0.82 0.14 85);                 /* Champagne Platinum */
+  --success: oklch(0.68 0.18 150);
+  --sale: oklch(0.65 0.28 355);
+  
+  --chart-1: oklch(0.65 0.28 355);
+  --chart-2: oklch(0.72 0.16 320);
+  --chart-3: oklch(0.82 0.14 85);
+  --chart-4: oklch(0.55 0.26 350);
+  --chart-5: oklch(0.85 0.12 345);
+  
+  --sidebar: oklch(0.14 0.018 260);
+  --sidebar-foreground: oklch(0.97 0.01 340);
+  --sidebar-primary: oklch(0.65 0.28 355);
+  --sidebar-primary-foreground: oklch(0.99 0.005 340);
+  --sidebar-accent: oklch(0.22 0.03 270);
+  --sidebar-accent-foreground: oklch(0.88 0.12 345);
+  --sidebar-border: oklch(0.30 0.04 330 / 35%);
+  --sidebar-ring: oklch(0.65 0.28 355);
 }
 
 .dark {
-  --background: oklch(0.18 0.018 20);
-  --foreground: oklch(0.97 0.008 60);
-  --card: oklch(0.23 0.022 18);
-  --card-foreground: oklch(0.97 0.008 60);
-  --popover: oklch(0.23 0.022 18);
-  --popover-foreground: oklch(0.97 0.008 60);
-  --primary: oklch(0.78 0.09 8);
-  --primary-foreground: oklch(0.2 0.03 12);
-  --secondary: oklch(0.28 0.026 16);
-  --secondary-foreground: oklch(0.97 0.008 60);
-  --muted: oklch(0.28 0.026 16);
-  --muted-foreground: oklch(0.72 0.018 20);
-  --accent: oklch(0.32 0.04 10);
-  --accent-foreground: oklch(0.97 0.008 60);
-  --destructive: oklch(0.704 0.191 22.216);
-  --destructive-foreground: oklch(0.97 0.008 60);
-  --border: oklch(1 0 0 / 12%);
-  --input: oklch(1 0 0 / 16%);
-  --ring: oklch(0.68 0.11 6);
-  --rose-deep: oklch(0.72 0.12 5);
-  --rose-soft: oklch(0.35 0.05 8);
-  --gold: oklch(0.8 0.1 78);
-  --success: oklch(0.68 0.13 152);
-  --sale: oklch(0.68 0.17 24);
-  --sidebar: oklch(0.23 0.022 18);
-  --sidebar-foreground: oklch(0.97 0.008 60);
-  --sidebar-primary: oklch(0.78 0.09 8);
-  --sidebar-primary-foreground: oklch(0.2 0.03 12);
-  --sidebar-accent: oklch(0.32 0.04 10);
-  --sidebar-accent-foreground: oklch(0.97 0.008 60);
-  --sidebar-border: oklch(1 0 0 / 12%);
-  --sidebar-ring: oklch(0.68 0.11 6);
+  --background: oklch(0.09 0.015 260);        /* Deep Obsidian Void */
+  --foreground: oklch(0.98 0.01 340);
+  --card: oklch(0.13 0.02 260);
+  --card-foreground: oklch(0.98 0.01 340);
+  --popover: oklch(0.15 0.025 260);
+  --popover-foreground: oklch(0.98 0.01 340);
+  --primary: oklch(0.68 0.29 355);
+  --primary-foreground: oklch(0.99 0.005 340);
+  --secondary: oklch(0.19 0.03 270);
+  --secondary-foreground: oklch(0.90 0.13 345);
+  --muted: oklch(0.18 0.025 265);
+  --muted-foreground: oklch(0.68 0.04 270);
+  --accent: oklch(0.24 0.05 340);
+  --accent-foreground: oklch(0.95 0.15 345);
+  --destructive: oklch(0.62 0.22 25);
+  --destructive-foreground: oklch(0.99 0.005 340);
+  --border: oklch(0.32 0.05 330 / 40%);
+  --input: oklch(0.19 0.03 270);
+  --ring: oklch(0.68 0.29 355);
+  --rose-deep: oklch(0.60 0.28 350);
+  --rose-soft: oklch(0.88 0.14 345);
+  --gold: oklch(0.85 0.15 85);
+  --success: oklch(0.70 0.19 150);
+  --sale: oklch(0.68 0.29 355);
+  --sidebar: oklch(0.11 0.018 260);
+  --sidebar-foreground: oklch(0.98 0.01 340);
+  --sidebar-primary: oklch(0.68 0.29 355);
+  --sidebar-primary-foreground: oklch(0.99 0.005 340);
+  --sidebar-accent: oklch(0.19 0.03 270);
+  --sidebar-accent-foreground: oklch(0.90 0.13 345);
+  --sidebar-border: oklch(0.32 0.05 330 / 40%);
+  --sidebar-ring: oklch(0.68 0.29 355);
 }
 
 @layer base {
@@ -174,16 +185,28 @@
 
 @utility eyebrow {
   font-size: 0.6875rem;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
-  font-weight: 500;
+  font-weight: 700;
+  color: var(--color-rose-soft);
 }
 
 @utility card-surface {
   background-color: var(--color-card);
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-card);
-  border: 1px solid color-mix(in oklab, var(--color-border) 70%, transparent);
+  border: 1px solid var(--color-border);
+  backdrop-filter: blur(16px);
+}
+
+@utility glam-glow {
+  box-shadow: 0 0 25px -4px oklch(0.65 0.28 355 / 0.35);
+}
+
+@utility glam-gradient-text {
+  background: linear-gradient(135deg, #ffffff 15%, #f4a6c7 60%, #ff2a85 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 @utility hide-scrollbar {

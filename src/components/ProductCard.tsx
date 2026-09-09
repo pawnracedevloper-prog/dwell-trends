@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Heart, Flame, Zap } from "lucide-react";
+import { Heart, Flame, Zap, Sparkles } from "lucide-react";
 import { inr } from "@/lib/products";
 import { useShop } from "@/lib/store";
 
@@ -7,7 +7,7 @@ export function ProductCard({ product }: { product: any }) {
   const { wishlist, toggleWishlist } = useShop();
   
   const targetId = product._id || product.id;
-  const isWished = wishlist.includes(targetId);
+  const isWished = wishlist?.includes(targetId);
 
   // Deal price & discount calculations
   const isDealActive = product.dealType && product.dealType !== "None" && product.dealPrice;
@@ -26,45 +26,45 @@ export function ProductCard({ product }: { product: any }) {
   // Safe color/variant extraction
   const colours = product.colours || product.variants?.map((v: any) => ({
     name: v.colourName || v.name,
-    hex: v.colourHex || v.hex || "#000",
+    hex: v.colourHex || v.hex || "#FF2A85",
   })) || [];
 
   return (
     <Link
       to="/product/$productId"
       params={{ productId: targetId }}
-      className="group relative flex flex-col overflow-hidden rounded-xl border border-border/70 bg-card transition-all hover:-translate-y-1 hover:shadow-lg"
+      className="group relative flex flex-col overflow-hidden rounded-2xl border border-border/80 bg-[#14171e]/90 shadow-sm backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:border-primary/50 hover:shadow-[0_10px_30px_rgba(255,42,135,0.22)]"
     >
       {/* Image & Badges */}
-      <div className="relative aspect-[3/4] overflow-hidden bg-muted">
+      <div className="relative aspect-[3/4] overflow-hidden bg-secondary/40">
         <img
           src={imageUrl}
           alt={product.name}
           className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
         />
 
-        {/* Top Badges */}
+        {/* Top Deal Badges */}
         <div className="absolute left-2.5 top-2.5 flex flex-col gap-1.5 z-10">
           {product.dealType === "Wow" && (
-            <span className="flex items-center gap-1 rounded bg-blue-600 px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-white shadow-md">
-              <Zap className="h-3 w-3 fill-amber-300 text-amber-300" /> WOW DEAL
+            <span className="flex items-center gap-1 rounded-full border border-primary/40 bg-[#0d0f14]/85 px-2.5 py-0.5 text-[9px] font-black uppercase tracking-widest text-rose-soft backdrop-blur-md shadow-md glam-glow">
+              <Zap className="h-3 w-3 fill-primary text-primary" /> WOW DEAL
             </span>
           )}
 
           {product.dealType === "Hot" && (
-            <span className="flex items-center gap-1 rounded bg-amber-500 px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-white shadow-md">
+            <span className="flex items-center gap-1 rounded-full border border-rose-deep/40 bg-rose-deep/80 px-2.5 py-0.5 text-[9px] font-black uppercase tracking-widest text-white backdrop-blur-md shadow-md">
               <Flame className="h-3 w-3 fill-white text-white" /> HOT DEAL
             </span>
           )}
 
           {(product.isNew || product.isNewItem) && product.dealType !== "Wow" && product.dealType !== "Hot" && (
-            <span className="rounded bg-primary px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest text-primary-foreground">
-              New
+            <span className="rounded-full border border-primary/40 bg-primary/20 px-2.5 py-0.5 text-[9px] font-black uppercase tracking-widest text-rose-soft backdrop-blur-md glam-glow">
+              ✦ New Drop
             </span>
           )}
         </div>
 
-        {/* Wishlist Button */}
+        {/* Wishlist Floating Button */}
         <button
           type="button"
           onClick={(e) => {
@@ -72,25 +72,26 @@ export function ProductCard({ product }: { product: any }) {
             e.stopPropagation();
             toggleWishlist(targetId);
           }}
-          className="absolute right-2.5 top-2.5 z-10 grid h-8 w-8 place-items-center rounded-full bg-card/90 backdrop-blur transition-colors hover:bg-card shadow-sm"
+          className="absolute right-2.5 top-2.5 z-10 grid h-8 w-8 place-items-center rounded-full bg-[#0d0f14]/80 backdrop-blur-md border border-primary/30 shadow-md transition-all hover:scale-110 hover:border-primary"
+          aria-label="Wishlist"
         >
-          <Heart className={`h-4 w-4 ${isWished ? "fill-rose-600 text-rose-600" : "text-muted-foreground"}`} />
+          <Heart className={`h-4 w-4 transition-colors ${isWished ? "fill-primary text-primary" : "text-rose-soft"}`} />
         </button>
       </div>
 
       {/* Details */}
-      <div className="flex flex-1 flex-col p-3 sm:p-4">
+      <div className="flex flex-1 flex-col p-3.5 sm:p-4">
         <div className="mb-1 flex items-center justify-between text-xs text-muted-foreground">
-          <span className="font-semibold uppercase text-[10px] tracking-wider">
+          <span className="text-[10px] font-bold uppercase tracking-widest text-rose-soft/80 truncate">
             {product.brand || "Dwell Trends"}
           </span>
 
           {colours.length > 0 && (
-            <div className="flex gap-1">
+            <div className="flex gap-1 shrink-0 ml-1">
               {colours.slice(0, 4).map((c: any, i: number) => (
                 <span
                   key={i}
-                  className="h-2.5 w-2.5 rounded-full border border-black/10 shadow-xs"
+                  className="h-2.5 w-2.5 rounded-full border border-white/20 shadow-xs"
                   style={{ backgroundColor: c.hex }}
                   title={c.name}
                 />
@@ -99,35 +100,39 @@ export function ProductCard({ product }: { product: any }) {
           )}
         </div>
 
-        <h3 className="line-clamp-1 text-sm font-medium leading-tight text-foreground sm:text-base">
+        <h3 className="line-clamp-1 font-display text-sm font-semibold text-foreground transition-colors group-hover:text-primary sm:text-base">
           {product.name}
         </h3>
 
         {/* Pricing Block */}
         <div className="mt-auto pt-3 space-y-0.5">
           <div className="flex flex-wrap items-baseline gap-2">
-            <span className="text-sm font-bold text-foreground sm:text-base">
+            <span className="text-sm font-black text-primary sm:text-base">
               {inr ? inr(effectivePrice) : `₹${effectivePrice}`}
             </span>
 
             {originalMrp > effectivePrice && (
-              <span className="text-xs text-muted-foreground line-through">
+              <span className="text-xs text-muted-foreground line-through font-semibold">
                 {inr ? inr(originalMrp) : `₹${originalMrp}`}
               </span>
             )}
 
             {discount > 0 && (
-              <span className="text-[10px] font-bold text-green-700 sm:text-xs">
+              <span className="text-[10px] font-black text-rose-soft bg-primary/10 border border-primary/20 px-1.5 py-0.2 rounded-md sm:text-[11px]">
                 {discount}% OFF
               </span>
             )}
           </div>
 
           {product.dealType === "Hot" && (
-            <p className="text-[10px] font-bold text-amber-600">Hot Deal Applied</p>
+            <p className="text-[10px] font-bold text-rose-soft/90 flex items-center gap-1">
+              <span>✦</span> Hot Deal Applied
+            </p>
           )}
           {product.dealType === "Wow" && (
-            <p className="text-[10px] font-bold text-blue-600">Special Offer Applied</p>
+            <p className="text-[10px] font-bold text-primary flex items-center gap-1">
+              <span>✦</span> Special Offer Applied
+            </p>
           )}
         </div>
       </div>

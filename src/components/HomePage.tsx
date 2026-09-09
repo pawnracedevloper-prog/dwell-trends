@@ -42,7 +42,11 @@ export function HomePage() {
             setUser(res.user);
           }
         })
-        .catch(console.error);
+        .catch(() => {
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
+          if (setUser) setUser(null);
+        });
     }
   }, [user, setUser]);
 
@@ -94,52 +98,58 @@ export function HomePage() {
         key={product._id} 
         to="/product/$productId" 
         params={{ productId: product._id }} 
-        className="group block bg-card border border-border rounded-xl overflow-hidden shadow-xs hover:shadow-md transition-all"
+        className="group block bg-[#14171d]/90 border border-border/80 rounded-2xl overflow-hidden shadow-xs hover:border-primary/50 hover:shadow-[0_8px_30px_rgba(255,42,135,0.22)] transition-all duration-300"
       >
-        <div className="aspect-[3/4] bg-secondary/20 overflow-hidden relative">
+        <div className="aspect-[3/4] bg-secondary/40 overflow-hidden relative">
           <img 
             src={product.images?.[0]?.url || product.images?.[0] || ""} 
             alt={product.name} 
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
           />
 
           {/* Deal Badges */}
-          <div className="absolute top-2.5 left-2.5 flex flex-col gap-1 z-10">
+          <div className="absolute top-2.5 left-2.5 flex flex-col gap-1.5 z-10">
             {product.dealType === "Wow" && (
-              <span className="flex items-center gap-1 rounded bg-blue-600 px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-white shadow-md">
-                <Zap className="h-3 w-3 fill-amber-300 text-amber-300" /> WOW DEAL
+              <span className="flex items-center gap-1 rounded-full border border-primary/40 bg-[#0d0f14]/85 px-2.5 py-0.5 text-[9px] font-black uppercase tracking-widest text-rose-soft backdrop-blur-md shadow-md glam-glow">
+                <Zap className="h-3 w-3 fill-primary text-primary" /> WOW DEAL
               </span>
             )}
             {product.dealType === "Hot" && (
-              <span className="flex items-center gap-1 rounded bg-amber-500 px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-white shadow-md">
+              <span className="flex items-center gap-1 rounded-full border border-rose-deep/40 bg-rose-deep/80 px-2.5 py-0.5 text-[9px] font-black uppercase tracking-widest text-white backdrop-blur-md shadow-md">
                 <Flame className="h-3 w-3 fill-white text-white" /> HOT DEAL
               </span>
             )}
           </div>
         </div>
 
-        <div className="p-4 space-y-1">
-          <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground truncate">
+        <div className="p-4 space-y-1.5">
+          <p className="text-[10px] font-bold uppercase tracking-widest text-rose-soft/80 truncate">
             {product.brand || "Dwell Trends"}
           </p>
-          <h3 className="font-display text-sm font-semibold truncate text-foreground">{product.name}</h3>
+          <h3 className="font-display text-sm font-semibold truncate text-foreground group-hover:text-primary transition-colors">
+            {product.name}
+          </h3>
           <div className="flex items-baseline gap-2 pt-0.5">
-            <span className="text-sm font-bold text-primary">₹{effectivePrice}</span>
+            <span className="text-sm font-black text-primary">₹{effectivePrice}</span>
             {originalMrp > effectivePrice && (
               <span className="text-xs text-muted-foreground line-through">₹{originalMrp}</span>
             )}
             {discountPercent > 0 && (
-              <span className="text-[10px] font-bold text-green-700">
+              <span className="text-[10px] font-black text-rose-soft bg-primary/10 border border-primary/20 px-1.5 py-0.2 rounded-md">
                 {discountPercent}% OFF
               </span>
             )}
           </div>
 
           {product.dealType === "Hot" && (
-            <p className="text-[10px] font-bold text-amber-600">Hot Deal Applied</p>
+            <p className="text-[10px] font-bold text-rose-soft/90 flex items-center gap-1">
+              <span>✦</span> Hot Deal Applied
+            </p>
           )}
           {product.dealType === "Wow" && (
-            <p className="text-[10px] font-bold text-blue-600">Special Offer Applied</p>
+            <p className="text-[10px] font-bold text-primary flex items-center gap-1">
+              <span>✦</span> Special Offer Applied
+            </p>
           )}
         </div>
       </Link>
@@ -149,7 +159,7 @@ export function HomePage() {
   return (
     <div className="space-y-14 pb-16">
       {/* 1. Category Quick Bubble Nav */}
-      <section className="border-b border-border bg-card py-4 shadow-xs">
+      <section className="border-b border-border/40 bg-[#0f1217] py-4 shadow-xs">
         <div className="container-page flex items-center justify-between sm:justify-center gap-6 overflow-x-auto no-scrollbar py-1">
           {CATEGORY_BUBBLES.map((cat) => (
             <Link
@@ -158,15 +168,15 @@ export function HomePage() {
               search={{ mainCategory: cat.query }}
               className="flex flex-col items-center gap-2 group shrink-0"
             >
-              <div className="h-16 w-16 sm:h-20 sm:w-20 rounded-full overflow-hidden border-2 border-transparent group-hover:border-primary transition-all p-0.5 shadow-xs">
+              <div className="h-16 w-16 sm:h-20 sm:w-20 rounded-full overflow-hidden border-2 border-primary/30 group-hover:border-primary group-hover:glam-glow transition-all p-0.5 shadow-xs bg-secondary/50">
                 <img
                   src={cat.image}
                   alt={cat.name}
                   className="h-full w-full object-cover rounded-full group-hover:scale-105 transition-transform"
                 />
               </div>
-              <span className="text-xs font-bold text-muted-foreground group-hover:text-primary transition-colors">
-                {cat.name}
+              <span className="text-xs font-bold text-muted-foreground group-hover:text-primary transition-colors flex items-center gap-1">
+                <span>{cat.name}</span>
               </span>
             </Link>
           ))}
@@ -177,27 +187,27 @@ export function HomePage() {
       <section className="container-page">
         {activeCampaign?.bannerImage?.url ? (
           /* DWELL GRAND GALA HERO BANNER */
-          <div className="relative rounded-3xl overflow-hidden shadow-2xl border border-border min-h-[440px] sm:min-h-[520px] flex flex-col justify-end p-6 sm:p-12 text-white group bg-card">
+          <div className="relative rounded-3xl overflow-hidden shadow-2xl border border-primary/25 min-h-[440px] sm:min-h-[520px] flex flex-col justify-end p-6 sm:p-12 text-white group bg-card glam-glow">
             <img
               src={activeCampaign.bannerImage.url}
               alt={activeCampaign.title}
               className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 brightness-[0.70]"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/55 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/60 to-transparent" />
 
             <div className="relative z-10 max-w-2xl space-y-3 sm:space-y-4">
               <div className="flex flex-wrap items-center gap-2">
-                <span className="bg-amber-500 text-black px-3.5 py-1 rounded-full text-xs font-black tracking-wider uppercase shadow-md flex items-center gap-1.5">
-                  <Zap className="h-3.5 w-3.5 fill-black" /> {activeCampaign.badgeText || "GRAND GALA LIVE"}
+                <span className="bg-primary text-white px-3.5 py-1 rounded-full text-xs font-black tracking-widest uppercase shadow-md flex items-center gap-1.5 glam-glow">
+                  <Zap className="h-3.5 w-3.5 fill-white" /> {activeCampaign.badgeText || "GRAND GALA LIVE"}
                 </span>
                 {activeCampaign.expiresAt && (
-                  <span className="bg-white/20 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1.5 text-amber-200">
+                  <span className="bg-white/10 backdrop-blur-md border border-white/20 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1.5 text-rose-soft">
                     <Clock className="h-3.5 w-3.5" /> Limited Time Event
                   </span>
                 )}
               </div>
 
-              <h1 className="font-display text-2xl sm:text-4xl lg:text-5xl font-black leading-tight tracking-tight drop-shadow-md">
+              <h1 className="font-display text-2xl sm:text-4xl lg:text-5xl font-black leading-tight tracking-tight drop-shadow-md glam-gradient-text">
                 {activeCampaign.title}
               </h1>
 
@@ -209,7 +219,7 @@ export function HomePage() {
                 <Link
                   to="/products"
                   search={{ dealType: "Wow" }}
-                  className="px-6 sm:px-8 py-3 bg-primary text-primary-foreground rounded-full text-xs font-bold uppercase tracking-wider hover:opacity-95 shadow-lg flex items-center gap-2 transition-transform active:scale-95"
+                  className="px-6 sm:px-8 py-3 bg-primary text-primary-foreground rounded-full text-xs font-bold uppercase tracking-wider hover:opacity-95 shadow-lg flex items-center gap-2 transition-transform active:scale-95 glam-glow"
                 >
                   Explore Gala Steals <ArrowRight className="h-4 w-4" />
                 </Link>
@@ -218,9 +228,9 @@ export function HomePage() {
                 {user?.role === "admin" && (
                   <Link
                     to="/admin"
-                    className="px-5 sm:px-6 py-3 border border-amber-400/50 bg-black/65 backdrop-blur-md text-amber-300 rounded-full text-xs font-bold hover:bg-black/85 transition-colors flex items-center gap-1.5 shadow-md"
+                    className="px-5 sm:px-6 py-3 border border-primary/40 bg-black/65 backdrop-blur-md text-rose-soft rounded-full text-xs font-bold hover:bg-black/85 transition-colors flex items-center gap-1.5 shadow-md"
                   >
-                    <ShieldAlert className="h-4 w-4 text-amber-400" /> Admin Portal
+                    <ShieldAlert className="h-4 w-4 text-primary" /> Admin Portal
                   </Link>
                 )}
               </div>
@@ -228,22 +238,22 @@ export function HomePage() {
           </div>
         ) : (
           /* STANDARD HERO LAYOUT FALLBACK */
-          <div className="relative rounded-3xl bg-secondary/40 border border-border overflow-hidden p-8 sm:p-14 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+          <div className="relative rounded-3xl bg-secondary/30 border border-border/80 overflow-hidden p-8 sm:p-14 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
             <div className="space-y-6">
-              <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-3.5 py-1 rounded-full text-xs font-bold tracking-wider uppercase">
-                <Sparkles className="h-3.5 w-3.5" /> Modern Living & Festive Edit
+              <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 text-rose-soft px-3.5 py-1 rounded-full text-xs font-bold tracking-wider uppercase">
+                <Sparkles className="h-3.5 w-3.5 text-primary" /> Modern Living & Festive Glam
               </div>
               <h1 className="font-display text-3xl sm:text-5xl lg:text-6xl font-black leading-tight text-foreground">
                 Style That Speaks <br />
-                <span className="text-primary font-serif italic">Your Heritage.</span>
+                <span className="glam-gradient-text font-serif italic">Your Heritage.</span>
               </h1>
               <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed max-w-md">
-                Unbox artisanal ensembles, trending prints, and exclusive token-powered deals curated for the modern wardrobe.
+                Unbox artisanal silhouettes, metallic prints, and exclusive token-powered drops curated for the modern wardrobe.
               </p>
               <div className="flex flex-wrap gap-4 pt-2">
                 <Link
                   to="/products"
-                  className="px-8 py-3.5 bg-primary text-primary-foreground rounded-full text-xs font-bold uppercase tracking-wider hover:opacity-95 shadow-md flex items-center gap-2"
+                  className="px-8 py-3.5 bg-primary text-primary-foreground rounded-full text-xs font-bold uppercase tracking-wider hover:opacity-95 shadow-md flex items-center gap-2 glam-glow"
                 >
                   Shop Collection <ArrowRight className="h-4 w-4" />
                 </Link>
@@ -252,14 +262,14 @@ export function HomePage() {
                 {user?.role === "admin" && (
                   <Link
                     to="/admin"
-                    className="px-6 py-3.5 border border-border bg-card rounded-full text-xs font-bold hover:bg-secondary/60 transition-colors flex items-center gap-1.5 shadow-xs"
+                    className="px-6 py-3.5 border border-primary/40 bg-card rounded-full text-xs font-bold text-rose-soft hover:bg-secondary/60 transition-colors flex items-center gap-1.5 shadow-xs"
                   >
                     <ShieldAlert className="h-4 w-4 text-primary" /> Admin Portal
                   </Link>
                 )}
               </div>
             </div>
-            <div className="aspect-[4/3] md:aspect-[5/4] max-h-[460px] rounded-2xl overflow-hidden shadow-lg border border-border bg-card">
+            <div className="aspect-[4/3] md:aspect-[5/4] max-h-[460px] rounded-2xl overflow-hidden shadow-lg border border-border/80 bg-card">
               <img
                 src="https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&q=80&w=1200"
                 alt="Artisanal Ethnic Wear Showcase"
@@ -273,20 +283,23 @@ export function HomePage() {
       {/* 3. Flash Sale / Gala Deals Rail */}
       {flashDeals.length > 0 && (
         <section className="container-page space-y-6">
-          <div className="flex items-center justify-between border-b border-border pb-4">
+          <div className="flex items-center justify-between border-b border-border/60 pb-4">
             <div className="flex items-center gap-2.5">
-              <div className="p-2 rounded-xl bg-amber-500/10 text-amber-600">
-                <Flame className="h-5 w-5 fill-amber-500" />
+              <div className="p-2 rounded-xl bg-primary/10 text-primary border border-primary/20 glam-glow">
+                <Flame className="h-5 w-5 fill-primary" />
               </div>
               <div>
-                <h2 className="font-display text-xl font-bold">Today's Flash Deals</h2>
+                <h2 className="font-display text-xl font-bold flex items-center gap-1.5">
+                  <span>Today's Flash Deals</span>
+                  <span className="text-primary text-xs">✦</span>
+                </h2>
                 <p className="text-xs text-muted-foreground">Limited inventory at promotional pricing</p>
               </div>
             </div>
             <Link
               to="/products"
               search={{ dealType: "Hot" }}
-              className="text-xs font-bold text-primary hover:underline flex items-center gap-1"
+              className="text-xs font-bold text-rose-soft hover:text-primary transition-colors flex items-center gap-1"
             >
               View All <ChevronRight className="h-3.5 w-3.5" />
             </Link>
@@ -300,24 +313,24 @@ export function HomePage() {
 
       {/* 4. Value Propositions */}
       <section className="container-page grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="flex items-center gap-4 p-5 bg-card border border-border rounded-2xl">
+        <div className="flex items-center gap-4 p-5 bg-card/60 backdrop-blur-md border border-border/70 rounded-2xl">
           <Truck className="h-7 w-7 text-primary shrink-0" />
           <div>
-            <h3 className="text-xs font-bold uppercase tracking-wider">Free Delivery</h3>
+            <h3 className="text-xs font-bold uppercase tracking-wider text-foreground">Free Delivery</h3>
             <p className="text-[11px] text-muted-foreground">Orders above ₹999 ship free</p>
           </div>
         </div>
-        <div className="flex items-center gap-4 p-5 bg-card border border-border rounded-2xl">
+        <div className="flex items-center gap-4 p-5 bg-card/60 backdrop-blur-md border border-border/70 rounded-2xl">
           <RotateCcw className="h-7 w-7 text-primary shrink-0" />
           <div>
-            <h3 className="text-xs font-bold uppercase tracking-wider">7-Day Easy Returns</h3>
+            <h3 className="text-xs font-bold uppercase tracking-wider text-foreground">7-Day Easy Returns</h3>
             <p className="text-[11px] text-muted-foreground">Doorstep pickup & quick checks</p>
           </div>
         </div>
-        <div className="flex items-center gap-4 p-5 bg-card border border-border rounded-2xl">
+        <div className="flex items-center gap-4 p-5 bg-card/60 backdrop-blur-md border border-border/70 rounded-2xl">
           <ShieldCheck className="h-7 w-7 text-primary shrink-0" />
           <div>
-            <h3 className="text-xs font-bold uppercase tracking-wider">100% Safe Payments</h3>
+            <h3 className="text-xs font-bold uppercase tracking-wider text-foreground">100% Safe Payments</h3>
             <p className="text-[11px] text-muted-foreground">Verified UPI reference tracking</p>
           </div>
         </div>
@@ -325,20 +338,23 @@ export function HomePage() {
 
       {/* 5. Budget Store: Under ₹999 */}
       <section className="container-page space-y-6">
-        <div className="flex items-center justify-between border-b border-border pb-4">
+        <div className="flex items-center justify-between border-b border-border/60 pb-4">
           <div className="flex items-center gap-2.5">
-            <div className="p-2 rounded-xl bg-primary/10 text-primary">
+            <div className="p-2 rounded-xl bg-primary/10 text-primary border border-primary/20">
               <Tag className="h-5 w-5" />
             </div>
             <div>
-              <h2 className="font-display text-xl font-bold">Budget Store · Under ₹999</h2>
+              <h2 className="font-display text-xl font-bold flex items-center gap-1.5">
+                <span>Budget Store · Under ₹999</span>
+                <span className="text-rose-soft text-xs">✧</span>
+              </h2>
               <p className="text-xs text-muted-foreground">Affordable everyday ethnic styles</p>
             </div>
           </div>
           <Link
             to="/products"
             search={{ maxPrice: 999 }}
-            className="text-xs font-bold text-primary hover:underline flex items-center gap-1"
+            className="text-xs font-bold text-rose-soft hover:text-primary transition-colors flex items-center gap-1"
           >
             View All <ChevronRight className="h-3.5 w-3.5" />
           </Link>
@@ -349,7 +365,7 @@ export function HomePage() {
             {budgetUnder999.map(renderProductItem)}
           </div>
         ) : (
-          <div className="text-center py-10 border border-dashed border-border rounded-2xl text-xs text-muted-foreground">
+          <div className="text-center py-10 border border-dashed border-border/60 rounded-2xl text-xs text-muted-foreground">
             No items under ₹999 found in the catalog.
           </div>
         )}
@@ -357,12 +373,15 @@ export function HomePage() {
 
       {/* 6. Featured Catalog Drops */}
       <section className="container-page space-y-6">
-        <div className="flex justify-between items-end border-b border-border pb-4">
+        <div className="flex justify-between items-end border-b border-border/60 pb-4">
           <div>
-            <h2 className="font-display text-xl font-bold">New Arrivals</h2>
+            <h2 className="font-display text-xl font-bold flex items-center gap-1.5">
+              <span>New Arrivals</span>
+              <span className="text-primary text-xs">✦</span>
+            </h2>
             <p className="text-xs text-muted-foreground">Freshly updated styles directly from your database</p>
           </div>
-          <Link to="/products" className="text-xs font-bold text-primary hover:underline flex items-center gap-1">
+          <Link to="/products" className="text-xs font-bold text-rose-soft hover:text-primary transition-colors flex items-center gap-1">
             Explore All <ChevronRight className="h-3.5 w-3.5" />
           </Link>
         </div>
