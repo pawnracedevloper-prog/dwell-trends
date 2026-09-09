@@ -84,28 +84,28 @@ export function ProductsPage() {
   return (
     <div className="container-page py-10 space-y-8 min-h-screen text-foreground">
       {/* Header & Filter Controls */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border/80 pb-6">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border pb-6">
         <div>
           <h1 className="font-display text-2xl sm:text-3xl font-black tracking-tight glam-gradient-text flex items-center gap-2">
             <span>{currentMainCategory === "All" ? "Complete Collection" : `${currentMainCategory}'s Edit`}</span>
-            <span className="text-primary text-sm">✦</span>
+            <span className="text-rose-deep text-sm">✦</span>
           </h1>
           <p className="text-xs text-muted-foreground mt-1 font-medium">
-            Showing <span className="text-rose-soft font-bold">{products.length}</span> {products.length === 1 ? "statement piece" : "statement pieces"} curated
+            Showing <span className="text-rose-deep font-bold">{products.length}</span> {products.length === 1 ? "statement piece" : "statement pieces"} curated
           </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
           {/* Main Category Pills */}
-          <div className="flex items-center gap-1.5 overflow-x-auto bg-[#14171e]/90 p-1.5 rounded-2xl border border-border/80 shadow-md backdrop-blur-md">
+          <div className="flex items-center gap-1.5 overflow-x-auto bg-card p-1.5 rounded-2xl border border-border shadow-xs">
             {MAIN_CATEGORIES.map((cat) => (
               <button
                 key={cat}
                 onClick={() => handleCategoryChange(cat)}
                 className={`px-3.5 py-1.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all ${
                   currentMainCategory === cat
-                    ? "bg-primary text-white glam-glow shadow-md"
-                    : "text-muted-foreground hover:text-foreground hover:bg-secondary/60"
+                    ? "bg-primary text-primary-foreground shadow-xs"
+                    : "text-muted-foreground hover:text-rose-deep hover:bg-secondary/70"
                 }`}
               >
                 {cat}
@@ -117,7 +117,7 @@ export function ProductsPage() {
           <select
             value={sortBy}
             onChange={(e: any) => setSortBy(e.target.value)}
-            className="p-2.5 bg-[#14171e]/90 border border-border/80 rounded-2xl text-xs font-bold text-foreground outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 shadow-md backdrop-blur-md"
+            className="p-2.5 bg-card border border-border rounded-2xl text-xs font-bold text-foreground outline-none focus:border-rose-deep focus:ring-2 focus:ring-rose-deep/15 shadow-xs"
           >
             <option value="newest">Featured & Newest Drops</option>
             <option value="price-asc">Price: Low to High</option>
@@ -130,26 +130,26 @@ export function ProductsPage() {
       {(currentMainCategory !== "All" || currentDealType || currentMaxPrice || subCategoryFilter) && (
         <div className="flex items-center gap-2 flex-wrap text-xs">
           <span className="text-muted-foreground font-black uppercase tracking-widest text-[10px] flex items-center gap-1">
-            <Sparkles className="h-3 w-3 text-primary" /> Active Filters:
+            <Sparkles className="h-3 w-3 text-rose-deep" /> Active Filters:
           </span>
           {currentMainCategory !== "All" && (
-            <span className="bg-secondary/80 text-rose-soft px-3 py-1 rounded-full border border-primary/30 flex items-center gap-1.5 font-bold shadow-xs">
+            <span className="bg-secondary text-rose-deep px-3 py-1 rounded-full border border-rose-deep/20 flex items-center gap-1.5 font-bold shadow-xs">
               <span className="text-[10px]">✦</span> Category: {currentMainCategory}
             </span>
           )}
           {currentDealType && (
-            <span className="bg-primary/15 text-rose-soft border border-primary/40 px-3 py-1 rounded-full font-black uppercase tracking-wider glam-glow">
+            <span className="bg-secondary text-rose-deep border border-rose-deep/25 px-3 py-1 rounded-full font-black uppercase tracking-wider">
               Deal: {currentDealType}
             </span>
           )}
           {currentMaxPrice && (
-            <span className="bg-secondary/80 text-foreground px-3 py-1 rounded-full border border-border/80 font-bold">
+            <span className="bg-card text-foreground px-3 py-1 rounded-full border border-border font-bold">
               Under ₹{currentMaxPrice}
             </span>
           )}
           <button
             onClick={handleClearFilters}
-            className="text-xs text-primary font-black uppercase tracking-wider hover:underline flex items-center gap-1 ml-2 transition-all hover:scale-105"
+            className="text-xs text-rose-deep font-black uppercase tracking-wider hover:underline flex items-center gap-1 ml-2 transition-all hover:scale-105"
           >
             <X className="h-3.5 w-3.5" /> Clear All
           </button>
@@ -159,18 +159,18 @@ export function ProductsPage() {
       {/* Product Grid */}
       {loading ? (
         <div className="py-28 text-center space-y-3">
-          <RefreshCw className="h-7 w-7 animate-spin mx-auto text-primary" />
-          <p className="text-xs text-muted-foreground font-bold tracking-widest uppercase">Filtering Drops...</p>
+          <RefreshCw className="h-7 w-7 animate-spin mx-auto text-rose-deep" />
+          <p className="text-xs text-rose-deep font-black tracking-widest uppercase">Filtering Drops...</p>
         </div>
       ) : products.length === 0 ? (
-        <div className="text-center py-20 border border-dashed border-border/80 bg-[#14171e]/50 backdrop-blur-md rounded-3xl space-y-4 max-w-md mx-auto">
+        <div className="text-center py-20 border border-dashed border-border bg-card/60 backdrop-blur-md rounded-3xl space-y-4 max-w-md mx-auto shadow-xs">
           <p className="font-display text-lg font-black glam-gradient-text">No Styles Found</p>
           <p className="text-xs text-muted-foreground leading-relaxed px-4">
             No items matched your active selections for "{currentMainCategory}". Adjust your filters to discover more.
           </p>
           <button
             onClick={handleClearFilters}
-            className="px-6 py-2.5 bg-primary text-white rounded-xl text-xs font-black uppercase tracking-wider glam-glow hover:opacity-95 transition-all"
+            className="px-6 py-2.5 bg-primary text-primary-foreground rounded-full text-xs font-black uppercase tracking-widest hover:opacity-90 transition-all shadow-card"
           >
             Reset Filters
           </button>
