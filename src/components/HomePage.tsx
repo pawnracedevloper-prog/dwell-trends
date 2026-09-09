@@ -11,7 +11,8 @@ import {
   Zap, 
   Flame, 
   Tag, 
-  ChevronRight 
+  ChevronRight,
+  Clock
 } from "lucide-react";
 
 const CATEGORY_BUBBLES = [
@@ -24,6 +25,7 @@ const CATEGORY_BUBBLES = [
 
 export function HomePage() {
   const { user } = useShop();
+  const [activeCampaign, setActiveCampaign] = useState<any>(null);
   const [featuredProducts, setFeaturedProducts] = useState<any[]>([]);
   const [flashDeals, setFlashDeals] = useState<any[]>([]);
   const [budgetUnder999, setBudgetUnder999] = useState<any[]>([]);
@@ -33,22 +35,26 @@ export function HomePage() {
     async function loadCatalog() {
       try {
         setLoading(true);
-        const [allRes, under999Res] = await Promise.all([
+        const [campaignRes, allRes, under999Res] = await Promise.allSettled([
+          endpoints.getActiveCampaign?.() || Promise.resolve({ success: false }),
           endpoints.getProducts(),
           endpoints.getProducts({ maxPrice: 999 }),
         ]);
 
-        if (allRes?.success && allRes.products) {
-          setFeaturedProducts(allRes.products.slice(0, 8));
-          // Filter products with active Wow or Hot deal tags
-          const activeDeals = allRes.products.filter(
+        if (campaignRes.status === "fulfilled" && campaignRes.value?.success && campaignRes.value.campaign) {
+          setActiveCampaign(campaignRes.value.campaign);
+        }
+
+        if (allRes.status === "fulfilled" && allRes.value?.success && allRes.value.products) {
+          setFeaturedProducts(allRes.value.products.slice(0, 8));
+          const activeDeals = allRes.value.products.filter(
             (p: any) => p.dealType === "Hot" || p.dealType === "Wow"
           );
           setFlashDeals(activeDeals.slice(0, 4));
         }
 
-        if (under999Res?.success && under999Res.products) {
-          setBudgetUnder999(under999Res.products.slice(0, 4));
+        if (under999Res.status === "fulfilled" && under999Res.value?.success && under999Res.value.products) {
+          setBudgetUnder999(under999Res.value.products.slice(0, 4));
         }
       } catch (err) {
         console.error("Failed to load home page sections:", err);
@@ -152,49 +158,102 @@ export function HomePage() {
         </div>
       </section>
 
-      {/* 2. Hero Section */}
+      {/* 2. Hero Section (Dynamic Grand Gala Campaign OR Default Hero) */}
       <section className="container-page">
-        <div className="relative rounded-3xl bg-secondary/40 border border-border overflow-hidden p-8 sm:p-14 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-          <div className="space-y-6">
-            <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-3.5 py-1 rounded-full text-xs font-bold tracking-wider uppercase">
-              <Sparkles className="h-3.5 w-3.5" /> Modern Living & Festive Edit
-            </div>
-            <h1 className="font-display text-3xl sm:text-5xl lg:text-6xl font-black leading-tight text-foreground">
-              Style That Speaks <br />
-              <span className="text-primary font-serif italic">Your Heritage.</span>
-            </h1>
-            <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed max-w-md">
-              Unbox artisanal ensembles, trending prints, and exclusive token-powered deals curated for the modern wardrobe.
-            </p>
-            <div className="flex flex-wrap gap-4 pt-2">
-              <Link
-                to="/products"
-                className="px-8 py-3.5 bg-primary text-primary-foreground rounded-full text-xs font-bold uppercase tracking-wider hover:opacity-95 shadow-md flex items-center gap-2"
-              >
-                Shop Collection <ArrowRight className="h-4 w-4" />
-              </Link>
-              
-              {user?.role === "admin" && (
-                <Link
-                  to="/admin"
-                  className="px-6 py-3.5 border border-border bg-card rounded-full text-xs font-bold hover:bg-secondary/60 transition-colors"
-                >
-                  Admin Portal
-                </Link>
-              )}
-            </div>
-          </div>
-          <div className="aspect-[4/3] md:aspect-[5/4] max-h-[460px] rounded-2xl overflow-hidden shadow-lg border border-border bg-card">
+        {activeCampaign?.bannerImage?.url ? (
+          /* DWELL GRAND GALA HERO BANNER */
+          <div className="relative rounded-3xl overflow-hidden shadow-2xl border border-border min-h-[380px] sm:min-h-[460px] flex flex-col justify-end p-8 sm:p-14 text-white group">
             <img
-              src="https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&q=80&w=1200"
-              alt="Artisanal Ethnic Wear Showcase"
-              className="w-full h-full object-cover object-top hover:scale-102 transition-transform duration-700"
+              src={activeCampaign.bannerImage.url}
+              alt={activeCampaign.title}
+              className="absolute inset-0 w-full h-full object-cover group-hover:scale-102 transition-transform duration-700 brightness-[0.82]"
             />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
+
+            <div className="relative z-10 max-w-2xl space-y-4">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="bg-amber-500 text-black px-3.5 py-1 rounded-full text-xs font-black tracking-wider uppercase shadow-md flex items-center gap-1.5">
+                  <Zap className="h-3.5 w-3.5 fill-black" /> {activeCampaign.badgeText || "GRAND GALA LIVE"}
+                </span>
+                {activeCampaign.expiresAt && (
+                  <span className="bg-white/20 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1.5 text-amber-200">
+                    <Clock className="h-3.5 w-3.5" /> Limited Time Event
+                  </span>
+                )}
+              </div>
+
+              <h1 className="font-display text-3xl sm:text-5xl lg:text-6xl font-black leading-tight tracking-tight drop-shadow-md">
+                {activeCampaign.title}
+              </h1>
+
+              <p className="text-xs sm:text-sm text-gray-200 leading-relaxed max-w-lg drop-shadow">
+                {activeCampaign.tagline}
+              </p>
+
+              <div className="flex flex-wrap items-center gap-4 pt-2">
+                <Link
+                  to="/products"
+                  search={{ dealType: "Wow" }}
+                  className="px-8 py-3.5 bg-primary text-primary-foreground rounded-full text-xs font-bold uppercase tracking-wider hover:opacity-95 shadow-lg flex items-center gap-2"
+                >
+                  Explore Gala Steals <ArrowRight className="h-4 w-4" />
+                </Link>
+
+                {user?.role === "admin" && (
+                  <Link
+                    to="/admin"
+                    className="px-6 py-3.5 border border-white/30 bg-black/40 backdrop-blur-md text-white rounded-full text-xs font-bold hover:bg-black/60 transition-colors"
+                  >
+                    Admin Portal
+                  </Link>
+                )}
+              </div>
+            </div>
           </div>
-        </div>
+        ) : (
+          /* STANDARD HERO LAYOUT FALLBACK */
+          <div className="relative rounded-3xl bg-secondary/40 border border-border overflow-hidden p-8 sm:p-14 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+            <div className="space-y-6">
+              <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-3.5 py-1 rounded-full text-xs font-bold tracking-wider uppercase">
+                <Sparkles className="h-3.5 w-3.5" /> Modern Living & Festive Edit
+              </div>
+              <h1 className="font-display text-3xl sm:text-5xl lg:text-6xl font-black leading-tight text-foreground">
+                Style That Speaks <br />
+                <span className="text-primary font-serif italic">Your Heritage.</span>
+              </h1>
+              <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed max-w-md">
+                Unbox artisanal ensembles, trending prints, and exclusive token-powered deals curated for the modern wardrobe.
+              </p>
+              <div className="flex flex-wrap gap-4 pt-2">
+                <Link
+                  to="/products"
+                  className="px-8 py-3.5 bg-primary text-primary-foreground rounded-full text-xs font-bold uppercase tracking-wider hover:opacity-95 shadow-md flex items-center gap-2"
+                >
+                  Shop Collection <ArrowRight className="h-4 w-4" />
+                </Link>
+
+                {user?.role === "admin" && (
+                  <Link
+                    to="/admin"
+                    className="px-6 py-3.5 border border-border bg-card rounded-full text-xs font-bold hover:bg-secondary/60 transition-colors"
+                  >
+                    Admin Portal
+                  </Link>
+                )}
+              </div>
+            </div>
+            <div className="aspect-[4/3] md:aspect-[5/4] max-h-[460px] rounded-2xl overflow-hidden shadow-lg border border-border bg-card">
+              <img
+                src="https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&q=80&w=1200"
+                alt="Artisanal Ethnic Wear Showcase"
+                className="w-full h-full object-cover object-top hover:scale-102 transition-transform duration-700"
+              />
+            </div>
+          </div>
+        )}
       </section>
 
-      {/* 3. Flash Sale / Deals Rail */}
+      {/* 3. Flash Sale / Gala Deals Rail */}
       {flashDeals.length > 0 && (
         <section className="container-page space-y-6">
           <div className="flex items-center justify-between border-b border-border pb-4">

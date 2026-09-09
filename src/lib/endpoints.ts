@@ -129,4 +129,10 @@ export const endpoints = {
 
   checkPaymentStatus: (merchantTransactionId: string) =>
     fetchAPI(`/payments/status/${merchantTransactionId}`),
+    // Add inside `endpoints` object in src/lib/endpoints.ts:
+getActiveCampaign: () => fetchAPI("/campaigns/active"),
+getAllCampaigns: () => fetchAPI("/campaigns/all"),
+createCampaign: (formData: FormData) => fetchAPI("/campaigns", { method: "POST", body: formData }),
+updateCampaign: (id: string, formData: FormData) => fetchAPI(`/campaigns/${id}`, { method: "PUT", body: formData }),
+deleteCampaign: (id: string) => fetchAPI(`/campaigns/${id}`, { method: "DELETE" }),
 };
