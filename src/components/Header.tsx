@@ -76,7 +76,11 @@ export function Header({ onOpenCart }: { onOpenCart?: () => void }) {
             setUser(res.user);
           }
         })
-        .catch(console.error);
+        .catch(() => {
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
+          if (setUser) setUser(null);
+        });
     }
   }, [user, setUser]);
 
@@ -92,15 +96,24 @@ export function Header({ onOpenCart }: { onOpenCart?: () => void }) {
         await endpoints.logout();
       }
     } catch (err) {
-      console.error("Backend logout error (clearing local session anyway):", err);
+      console.warn("Backend logout notification warning:", err);
     } finally {
+      // 1. Clear all authentication cache keys
       localStorage.removeItem("token");
-      if (logout) {
+      localStorage.removeItem("user");
+      localStorage.removeItem("shop-storage");
+
+      // 2. Clear application store state
+      if (typeof logout === "function") {
         logout();
-      } else if (setUser) {
+      }
+      if (typeof setUser === "function") {
         setUser(null);
       }
+
       setOpen(false);
+
+      // 3. Navigate directly to auth route
       navigate({ to: "/auth" });
     }
   };

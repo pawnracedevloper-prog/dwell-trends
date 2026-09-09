@@ -7,6 +7,7 @@ export type CartItem = {
   colour: string;
   qty: number;
   productDetails?: any; // To hold live fetched product data cache in cart if needed
+  productData?: any;
 };
 
 export type Order = {
@@ -17,13 +18,14 @@ export type Order = {
   items: { name: string; qty: number; image: string }[];
 };
 
-export type User = { name: string; email: string; role?: string };
+export type User = { name: string; email: string; role?: string; walletTokens?: number };
 
 type ShopState = {
   cart: CartItem[];
   wishlist: string[];
   orders: Order[];
   user: User | null;
+  setUser: (u: User | null) => void;
   addToCart: (item: CartItem) => void;
   setQty: (key: string, qty: number) => void;
   removeFromCart: (key: string) => void;
@@ -32,6 +34,7 @@ type ShopState = {
   placeOrder: (total: number, orderPayload?: any) => Promise<Order>;
   signIn: (u: User) => void;
   signOut: () => void;
+  logout: () => void;
   hydrated: boolean;
 };
 
@@ -97,10 +100,9 @@ export function ShopProvider({ children }: { children: ReactNode }) {
   const placeOrder = useCallback(
     async (total: number, orderPayload?: any) => {
       try {
-        // If live backend endpoint exists, try posting to it
         const res = await endpoints.createOrder(orderPayload || { total, items: cart });
         const newOrder: Order = {
-          id: res.order?.id || "SF" + Math.floor(100000 + Math.random() * 899999),
+          id: res.order?.id || res.order?._id || "SF" + Math.floor(100000 + Math.random() * 899999),
           date: new Date().toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }),
           total,
           status: "Confirmed",
@@ -114,7 +116,6 @@ export function ShopProvider({ children }: { children: ReactNode }) {
         setCart([]);
         return newOrder;
       } catch (err) {
-        // Fallback local order placement if backend order route is offline
         const fallbackOrder: Order = {
           id: "SF" + Math.floor(100000 + Math.random() * 899999),
           date: new Date().toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }),
@@ -135,13 +136,35 @@ export function ShopProvider({ children }: { children: ReactNode }) {
   );
 
   const signIn = useCallback((u: User) => setUser(u), []);
+
   const signOut = useCallback(() => {
     setUser(null);
     localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    localStorage.removeItem(LS);
   }, []);
+
+  const logout = signOut;
 
   const value = useMemo(
     () => ({
+      cart,
+      wishlist,
+      orders,
+      user,
+      setUser,
+      addToCart,
+      setQty,
+      removeFromCart,
+      clearCart,
+      toggleWishlist,
+      placeOrder,
+      signIn,
+      signOut,
+      logout,
+      hydrated,
+    }),
+    [
       cart,
       wishlist,
       orders,
@@ -154,9 +177,9 @@ export function ShopProvider({ children }: { children: ReactNode }) {
       placeOrder,
       signIn,
       signOut,
+      logout,
       hydrated,
-    }),
-    [cart, wishlist, orders, user, addToCart, setQty, removeFromCart, clearCart, toggleWishlist, placeOrder, signIn, signOut, hydrated],
+    ],
   );
 
   return <ShopContext.Provider value={value}>{children}</ShopContext.Provider>;
@@ -168,21 +191,27 @@ export function useShop() {
   return ctx;
 }
 
-// Note: cartTotals calculation is updated to safely work with live database items stored in state/cart
 export function cartTotals(cart: CartItem[], liveProductsMap?: Map<string, any>) {
   let mrp = 0;
   let price = 0;
   let count = 0;
   for (const c of cart) {
-    const p = liveProductsMap?.get(c.id) || c.productData;
+    const p = liveProductsMap?.get(c.id) || c.productDetails || c.productData;
     if (!p) {
       count += c.qty;
       continue;
     }
     mrp += (p.mrp || p.price) * c.qty;
-    price += p.price * c.qty;
+    price += (p.dealPrice || p.price) * c.qty;
     count += c.qty;
   }
   const shipping = price > 0 && price < 999 ? 79 : 0;
-  return { mrp: mrp || price, price, discount: (mrp && mrp > price) ? mrp - price : 0, shipping, total: price + shipping, count };
+  return {
+    mrp: mrp || price,
+    price,
+    discount: mrp && mrp > price ? mrp - price : 0,
+    shipping,
+    total: price + shipping,
+    count,
+  };
 }
