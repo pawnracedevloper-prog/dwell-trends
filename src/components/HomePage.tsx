@@ -12,7 +12,8 @@ import {
   Flame, 
   Tag, 
   ChevronRight,
-  Clock
+  Clock,
+  ShieldAlert
 } from "lucide-react";
 
 const CATEGORY_BUBBLES = [
@@ -199,12 +200,13 @@ export function HomePage() {
                   Explore Gala Steals <ArrowRight className="h-4 w-4" />
                 </Link>
 
+                {/* Role-Protected Admin Portal Button */}
                 {user?.role === "admin" && (
                   <Link
                     to="/admin"
-                    className="px-6 py-3.5 border border-white/30 bg-black/40 backdrop-blur-md text-white rounded-full text-xs font-bold hover:bg-black/60 transition-colors"
+                    className="px-6 py-3.5 border border-white/30 bg-black/40 backdrop-blur-md text-white rounded-full text-xs font-bold hover:bg-black/60 transition-colors flex items-center gap-1.5 shadow-md"
                   >
-                    Admin Portal
+                    <ShieldAlert className="h-4 w-4 text-amber-400" /> Admin Portal
                   </Link>
                 )}
               </div>
@@ -232,12 +234,13 @@ export function HomePage() {
                   Shop Collection <ArrowRight className="h-4 w-4" />
                 </Link>
 
+                {/* Role-Protected Admin Portal Button */}
                 {user?.role === "admin" && (
                   <Link
                     to="/admin"
-                    className="px-6 py-3.5 border border-border bg-card rounded-full text-xs font-bold hover:bg-secondary/60 transition-colors"
+                    className="px-6 py-3.5 border border-border bg-card rounded-full text-xs font-bold hover:bg-secondary/60 transition-colors flex items-center gap-1.5 shadow-xs"
                   >
-                    Admin Portal
+                    <ShieldAlert className="h-4 w-4 text-primary" /> Admin Portal
                   </Link>
                 )}
               </div>
