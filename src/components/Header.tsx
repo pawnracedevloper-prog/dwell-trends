@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Heart, Menu, Search, ShoppingBag, User, X, ChevronDown, Sparkles, ShieldAlert } from "lucide-react";
+import { Heart, Menu, Search, ShoppingBag, User, X, ChevronDown, Sparkles, ShieldAlert, LogOut } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useShop } from "@/lib/store";
 import { endpoints } from "@/lib/endpoints";
@@ -63,7 +63,7 @@ export function Header({ onOpenCart }: { onOpenCart?: () => void }) {
   const [hoveredCategory, setHoveredCategory] = useState<string | null>(null);
   const [mobileExpandedCat, setMobileExpandedCat] = useState<string | null>(null);
   const navigate = useNavigate();
-  const { cart, wishlist, user, setUser } = useShop();
+  const { cart, wishlist, user, setUser, logout } = useShop();
   const count = cart.reduce((n, c) => n + c.qty, 0);
 
   // Sync user authentication state on mount if token exists in localStorage
@@ -85,6 +85,17 @@ export function Header({ onOpenCart }: { onOpenCart?: () => void }) {
     setOpen(false);
     navigate({ to: "/products", search: { q: q.trim() || undefined } });
   }
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    if (logout) {
+      logout();
+    } else if (setUser) {
+      setUser(null);
+    }
+    setOpen(false);
+    navigate({ to: "/auth" });
+  };
 
   return (
     <header className="sticky top-0 z-50 bg-card/95 shadow-[var(--shadow-bar)] backdrop-blur">
@@ -148,6 +159,20 @@ export function Header({ onOpenCart }: { onOpenCart?: () => void }) {
             <User className="h-4.5 w-4.5" />
             <span>{user ? user.name.split(" ")[0] : "Login"}</span>
           </Link>
+
+          {/* Desktop Logout Button */}
+          {user && (
+            <button
+              type="button"
+              onClick={handleLogout}
+              title="Logout"
+              aria-label="Logout"
+              className="hidden h-10 w-10 place-items-center rounded-lg text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive sm:grid"
+            >
+              <LogOut className="h-4.5 w-4.5" />
+            </button>
+          )}
+
           <Link
             to="/profile"
             aria-label="Wishlist"
@@ -337,13 +362,32 @@ export function Header({ onOpenCart }: { onOpenCart?: () => void }) {
               Shop All Catalog
             </Link>
 
-            <Link
-              to={user ? "/profile" : "/auth"}
-              onClick={() => setOpen(false)}
-              className="border-t border-border/60 pt-3 text-xs font-semibold text-muted-foreground"
-            >
-              {user ? `Logged in as ${user.name}` : "Login / Sign up"}
-            </Link>
+            {user ? (
+              <div className="border-t border-border/60 pt-2 space-y-1">
+                <Link
+                  to="/profile"
+                  onClick={() => setOpen(false)}
+                  className="block py-2 text-xs font-semibold text-foreground"
+                >
+                  My Account ({user.name})
+                </Link>
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="flex items-center gap-2 py-2 text-xs font-bold text-destructive w-full text-left"
+                >
+                  <LogOut className="h-4 w-4" /> Log out
+                </button>
+              </div>
+            ) : (
+              <Link
+                to="/auth"
+                onClick={() => setOpen(false)}
+                className="border-t border-border/60 pt-3 text-xs font-semibold text-muted-foreground"
+              >
+                Login / Sign up
+              </Link>
+            )}
           </div>
         </div>
       )}
