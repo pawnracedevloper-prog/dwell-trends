@@ -176,23 +176,23 @@ export function CheckoutPage() {
       {/* Accordion Steps */}
       <div className="lg:col-span-8 space-y-5">
         {errorMessage && (
-          <div className="p-4 bg-destructive/15 border border-destructive/30 text-destructive rounded-2xl text-xs font-bold shadow-md">
+          <div className="p-4 bg-destructive/10 border border-destructive/20 text-destructive rounded-2xl text-xs font-bold shadow-xs">
             {errorMessage}
           </div>
         )}
 
         {/* STEP 1: DELIVERY ADDRESS */}
-        <div className="border border-border/80 rounded-3xl bg-[#14171e]/90 overflow-hidden shadow-xl backdrop-blur-md">
+        <div className="border border-border/80 rounded-3xl bg-card overflow-hidden shadow-card backdrop-blur-md">
           <div
             onClick={() => setActiveStep(1)}
-            className="p-5 bg-secondary/50 border-b border-border/60 flex items-center justify-between cursor-pointer transition-colors hover:bg-secondary/70"
+            className="p-5 bg-secondary/60 border-b border-border/70 flex items-center justify-between cursor-pointer transition-colors hover:bg-secondary/80"
           >
             <div className="flex items-center gap-3">
               <span
                 className={`h-7 w-7 rounded-xl flex items-center justify-center text-xs font-black transition-all ${
                   activeStep > 1 
-                    ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30" 
-                    : "bg-primary text-white glam-glow"
+                    ? "bg-secondary text-rose-deep border border-rose-deep/30" 
+                    : "bg-primary text-primary-foreground shadow-xs"
                 }`}
               >
                 {activeStep > 1 ? <Check className="h-4 w-4" /> : "1"}
@@ -202,7 +202,7 @@ export function CheckoutPage() {
               </span>
             </div>
             {activeStep > 1 && (
-              <span className="text-xs text-rose-soft font-black uppercase tracking-wider hover:text-primary transition-colors">
+              <span className="text-xs text-rose-deep font-black uppercase tracking-wider hover:opacity-80 transition-opacity">
                 Edit Details
               </span>
             )}
@@ -212,107 +212,107 @@ export function CheckoutPage() {
             <form onSubmit={handleAddressSubmit} className="p-6 space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-[10px] font-black uppercase tracking-wider text-rose-soft block mb-1">Full Name</label>
+                  <label className="text-[10px] font-black uppercase tracking-wider text-rose-deep block mb-1">Full Name</label>
                   <input
                     required
                     placeholder="Recipient's Name"
                     value={form.fullName}
                     onChange={(e) => setForm({ ...form, fullName: e.target.value })}
-                    className="w-full p-3 bg-secondary/50 border border-border/80 rounded-xl text-xs text-foreground outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                    className="w-full p-3 bg-background border border-border rounded-xl text-xs text-foreground outline-none focus:border-rose-deep focus:ring-2 focus:ring-rose-deep/15 transition-all"
                   />
                 </div>
                 <div>
-                  <label className="text-[10px] font-black uppercase tracking-wider text-rose-soft block mb-1">Mobile Number</label>
+                  <label className="text-[10px] font-black uppercase tracking-wider text-rose-deep block mb-1">Mobile Number</label>
                   <input
                     required
                     type="tel"
                     placeholder="10-digit Mobile Number"
                     value={form.phone}
                     onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                    className="w-full p-3 bg-secondary/50 border border-border/80 rounded-xl text-xs text-foreground outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                    className="w-full p-3 bg-background border border-border rounded-xl text-xs text-foreground outline-none focus:border-rose-deep focus:ring-2 focus:ring-rose-deep/15 transition-all"
                   />
                 </div>
                 <div>
-                  <label className="text-[10px] font-black uppercase tracking-wider text-rose-soft block mb-1">Email ID</label>
+                  <label className="text-[10px] font-black uppercase tracking-wider text-rose-deep block mb-1">Email ID</label>
                   <input
                     type="email"
                     placeholder="name@domain.com (for order tracking)"
                     value={form.email}
                     onChange={(e) => setForm({ ...form, email: e.target.value })}
-                    className="w-full p-3 bg-secondary/50 border border-border/80 rounded-xl text-xs text-foreground outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                    className="w-full p-3 bg-background border border-border rounded-xl text-xs text-foreground outline-none focus:border-rose-deep focus:ring-2 focus:ring-rose-deep/15 transition-all"
                   />
                 </div>
                 <div>
-                  <label className="text-[10px] font-black uppercase tracking-wider text-rose-soft block mb-1">PIN Code</label>
+                  <label className="text-[10px] font-black uppercase tracking-wider text-rose-deep block mb-1">PIN Code</label>
                   <input
                     required
                     placeholder="6-digit PIN Code"
                     value={form.pinCode}
                     onChange={(e) => setForm({ ...form, pinCode: e.target.value })}
-                    className="w-full p-3 bg-secondary/50 border border-border/80 rounded-xl text-xs text-foreground outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                    className="w-full p-3 bg-background border border-border rounded-xl text-xs text-foreground outline-none focus:border-rose-deep focus:ring-2 focus:ring-rose-deep/15 transition-all"
                   />
                 </div>
                 <div>
-                  <label className="text-[10px] font-black uppercase tracking-wider text-rose-soft block mb-1">City / District</label>
+                  <label className="text-[10px] font-black uppercase tracking-wider text-rose-deep block mb-1">City / District</label>
                   <input
                     required
                     placeholder="City"
                     value={form.city}
                     onChange={(e) => setForm({ ...form, city: e.target.value })}
-                    className="w-full p-3 bg-secondary/50 border border-border/80 rounded-xl text-xs text-foreground outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                    className="w-full p-3 bg-background border border-border rounded-xl text-xs text-foreground outline-none focus:border-rose-deep focus:ring-2 focus:ring-rose-deep/15 transition-all"
                   />
                 </div>
                 <div>
-                  <label className="text-[10px] font-black uppercase tracking-wider text-rose-soft block mb-1">State</label>
+                  <label className="text-[10px] font-black uppercase tracking-wider text-rose-deep block mb-1">State</label>
                   <input
                     required
                     placeholder="State"
                     value={form.state}
                     onChange={(e) => setForm({ ...form, state: e.target.value })}
-                    className="w-full p-3 bg-secondary/50 border border-border/80 rounded-xl text-xs text-foreground outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                    className="w-full p-3 bg-background border border-border rounded-xl text-xs text-foreground outline-none focus:border-rose-deep focus:ring-2 focus:ring-rose-deep/15 transition-all"
                   />
                 </div>
               </div>
               <div>
-                <label className="text-[10px] font-black uppercase tracking-wider text-rose-soft block mb-1">Street Address</label>
+                <label className="text-[10px] font-black uppercase tracking-wider text-rose-deep block mb-1">Street Address</label>
                 <input
                   required
                   placeholder="House No., Building, Street Area, Landmark"
                   value={form.street}
                   onChange={(e) => setForm({ ...form, street: e.target.value })}
-                  className="w-full p-3 bg-secondary/50 border border-border/80 rounded-xl text-xs text-foreground outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                  className="w-full p-3 bg-background border border-border rounded-xl text-xs text-foreground outline-none focus:border-rose-deep focus:ring-2 focus:ring-rose-deep/15 transition-all"
                 />
               </div>
               <button
                 type="submit"
-                className="px-8 py-3.5 bg-primary text-white rounded-full text-xs font-black uppercase tracking-widest hover:opacity-95 active:scale-95 transition-all glam-glow flex items-center gap-2"
+                className="px-8 py-3.5 bg-primary text-primary-foreground rounded-full text-xs font-black uppercase tracking-widest hover:opacity-90 active:scale-95 transition-all shadow-card flex items-center gap-2"
               >
                 Deliver to this Address <ArrowRight className="h-4 w-4" />
               </button>
             </form>
           ) : (
             <div className="p-5 text-xs text-muted-foreground flex items-start gap-2.5">
-              <MapPin className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+              <MapPin className="h-4 w-4 text-rose-deep shrink-0 mt-0.5" />
               <div>
                 <span className="font-black text-foreground">{form.fullName}</span> — {form.street},{" "}
-                {form.city} - {form.pinCode}, {form.state} (Phone: <span className="text-rose-soft font-bold">{form.phone}</span>)
+                {form.city} - {form.pinCode}, {form.state} (Phone: <span className="text-rose-deep font-bold">{form.phone}</span>)
               </div>
             </div>
           )}
         </div>
 
         {/* STEP 2: ORDER SUMMARY */}
-        <div className="border border-border/80 rounded-3xl bg-[#14171e]/90 overflow-hidden shadow-xl backdrop-blur-md">
+        <div className="border border-border/80 rounded-3xl bg-card overflow-hidden shadow-card backdrop-blur-md">
           <div
             onClick={() => form.fullName && setActiveStep(2)}
-            className="p-5 bg-secondary/50 border-b border-border/60 flex items-center justify-between cursor-pointer transition-colors hover:bg-secondary/70"
+            className="p-5 bg-secondary/60 border-b border-border/70 flex items-center justify-between cursor-pointer transition-colors hover:bg-secondary/80"
           >
             <div className="flex items-center gap-3">
               <span
                 className={`h-7 w-7 rounded-xl flex items-center justify-center text-xs font-black transition-all ${
                   activeStep > 2 
-                    ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30" 
-                    : "bg-primary text-white glam-glow"
+                    ? "bg-secondary text-rose-deep border border-rose-deep/30" 
+                    : "bg-primary text-primary-foreground shadow-xs"
                 }`}
               >
                 {activeStep > 2 ? <Check className="h-4 w-4" /> : "2"}
@@ -336,12 +336,12 @@ export function CheckoutPage() {
                       <img
                         src={image}
                         alt={name}
-                        className="w-14 h-18 object-cover rounded-xl bg-secondary/50 border border-border/60 shrink-0"
+                        className="w-14 h-18 object-cover rounded-xl bg-background border border-border/80 shrink-0 shadow-xs"
                       />
                       <div className="flex-1 min-w-0">
                         <p className="text-xs font-bold truncate text-foreground">{name}</p>
                         <p className="text-[11px] text-muted-foreground mt-0.5">
-                          Size: <span className="text-rose-soft font-bold">{item.size || item.selectedSize}</span> · Colour: <span className="text-rose-soft font-bold">{item.colour || item.selectedColour}</span> · Qty: {item.qty}
+                          Size: <span className="text-rose-deep font-bold">{item.size || item.selectedSize}</span> · Colour: <span className="text-rose-deep font-bold">{item.colour || item.selectedColour}</span> · Qty: {item.qty}
                         </p>
                         <p className="text-xs font-black text-primary mt-2">
                           ₹{price * item.qty}
@@ -354,7 +354,7 @@ export function CheckoutPage() {
               <button
                 type="button"
                 onClick={() => setActiveStep(3)}
-                className="px-8 py-3.5 bg-primary text-white rounded-full text-xs font-black uppercase tracking-widest hover:opacity-95 active:scale-95 transition-all glam-glow flex items-center gap-2"
+                className="px-8 py-3.5 bg-primary text-primary-foreground rounded-full text-xs font-black uppercase tracking-widest hover:opacity-90 active:scale-95 transition-all shadow-card flex items-center gap-2"
               >
                 Continue to Payment <ArrowRight className="h-4 w-4" />
               </button>
@@ -363,9 +363,9 @@ export function CheckoutPage() {
         </div>
 
         {/* STEP 3: PAYMENT OPTION */}
-        <div className="border border-border/80 rounded-3xl bg-[#14171e]/90 overflow-hidden shadow-xl backdrop-blur-md">
-          <div className="p-5 bg-secondary/50 flex items-center gap-3">
-            <span className="h-7 w-7 rounded-xl bg-primary text-white flex items-center justify-center text-xs font-black glam-glow">
+        <div className="border border-border/80 rounded-3xl bg-card overflow-hidden shadow-card backdrop-blur-md">
+          <div className="p-5 bg-secondary/60 flex items-center gap-3">
+            <span className="h-7 w-7 rounded-xl bg-primary text-primary-foreground flex items-center justify-center text-xs font-black shadow-xs">
               3
             </span>
             <span className="font-display font-black text-sm uppercase tracking-wider text-foreground">
@@ -375,10 +375,10 @@ export function CheckoutPage() {
 
           {activeStep === 3 && (
             <div className="p-6 space-y-5">
-              <div className="p-4.5 border border-primary/40 bg-primary/10 rounded-2xl flex items-center justify-between glam-glow">
+              <div className="p-4.5 border border-rose-deep/30 bg-secondary/80 rounded-2xl flex items-center justify-between glam-glow">
                 <div className="flex items-center gap-3.5">
-                  <div className="p-2.5 rounded-xl bg-primary/20 text-primary border border-primary/30">
-                    <Zap className="h-5 w-5 fill-primary text-primary" />
+                  <div className="p-2.5 rounded-xl bg-secondary text-rose-deep border border-rose-deep/30">
+                    <Zap className="h-5 w-5 fill-rose-deep text-rose-deep" />
                   </div>
                   <div>
                     <p className="text-xs font-black uppercase tracking-wider text-foreground">Instant UPI Payment</p>
@@ -387,7 +387,7 @@ export function CheckoutPage() {
                     </p>
                   </div>
                 </div>
-                <span className="text-[10px] font-black uppercase tracking-widest text-rose-soft bg-primary/20 px-2.5 py-1 rounded-full border border-primary/30">
+                <span className="text-[10px] font-black uppercase tracking-widest text-rose-deep bg-background px-2.5 py-1 rounded-full border border-rose-deep/20">
                   Fast & Verified
                 </span>
               </div>
@@ -396,7 +396,7 @@ export function CheckoutPage() {
                 type="button"
                 disabled={loading}
                 onClick={handleInitiateUpiPayment}
-                className="w-full py-4 bg-primary text-white rounded-full text-xs font-black uppercase tracking-widest hover:opacity-95 active:scale-95 transition-all shadow-xl glam-glow disabled:opacity-50 flex items-center justify-center gap-2"
+                className="w-full py-4 bg-primary text-primary-foreground rounded-full text-xs font-black uppercase tracking-widest hover:opacity-90 active:scale-95 transition-all shadow-card disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 {loading ? (
                   <>
@@ -404,7 +404,7 @@ export function CheckoutPage() {
                   </>
                 ) : (
                   <>
-                    <Sparkles className="h-4 w-4" /> Pay ₹{finalPayableTotal} via UPI QR
+                    <Sparkles className="h-4 w-4 fill-rose-soft text-rose-soft animate-pulse" /> Pay ₹{finalPayableTotal} via UPI QR
                   </>
                 )}
               </button>
@@ -416,19 +416,19 @@ export function CheckoutPage() {
       {/* Price Details & Wallet Card */}
       <div className="lg:col-span-4 space-y-5 h-fit">
         {/* Token Wallet Box */}
-        <div className="bg-[#14171e]/90 border border-primary/30 rounded-3xl p-5 shadow-xl backdrop-blur-md relative overflow-hidden">
+        <div className="bg-card border border-rose-deep/30 rounded-3xl p-5 shadow-card backdrop-blur-md relative overflow-hidden">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="p-2.5 rounded-xl bg-primary/10 text-primary border border-primary/20 glam-glow">
-                <Coins className="h-5 w-5 fill-primary text-primary" />
+              <div className="p-2.5 rounded-xl bg-secondary text-rose-deep border border-rose-deep/20 glam-glow">
+                <Coins className="h-5 w-5 fill-rose-deep text-rose-deep" />
               </div>
               <div>
                 <h4 className="font-display text-xs font-black uppercase tracking-wider flex items-center gap-1.5 text-foreground">
                   Dwell Token Wallet
-                  {fetchingWallet && <RefreshCw className="h-3 w-3 animate-spin text-rose-soft" />}
+                  {fetchingWallet && <RefreshCw className="h-3 w-3 animate-spin text-rose-deep" />}
                 </h4>
                 <p className="text-[11px] text-muted-foreground mt-0.5">
-                  Available: <b className="text-rose-soft">{walletTokens} tokens</b> (₹{walletTokens})
+                  Available: <b className="text-rose-deep font-bold">{walletTokens} tokens</b> (₹{walletTokens})
                 </p>
               </div>
             </div>
@@ -440,7 +440,7 @@ export function CheckoutPage() {
                 onChange={(e) => setUseTokens(e.target.checked)}
                 className="sr-only peer"
               />
-              <div className="w-10 h-5.5 bg-secondary/80 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4.5 after:w-4.5 after:transition-all peer-checked:bg-primary peer-disabled:opacity-40 border border-border/80"></div>
+              <div className="w-10 h-5.5 bg-muted peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4.5 after:w-4.5 after:transition-all peer-checked:bg-rose-deep peer-disabled:opacity-40 border border-border"></div>
             </label>
           </div>
 
@@ -449,7 +449,7 @@ export function CheckoutPage() {
               Earn tokens automatically on this order to unlock savings on your next drop!
             </p>
           ) : useTokens ? (
-            <p className="text-[11px] text-rose-soft font-bold mt-3 pt-3 border-t border-primary/20 flex items-center gap-1.5">
+            <p className="text-[11px] text-rose-deep font-bold mt-3 pt-3 border-t border-rose-deep/20 flex items-center gap-1.5">
               <span>✦</span> Applied ₹{tokensToDeduct} discount from your wallet!
             </p>
           ) : (
@@ -460,8 +460,8 @@ export function CheckoutPage() {
         </div>
 
         {/* Price Breakdown Sidebar */}
-        <div className="bg-[#14171e]/90 border border-border/80 p-6 rounded-3xl space-y-4 shadow-xl backdrop-blur-md">
-          <h3 className="font-display font-black uppercase tracking-widest text-xs text-rose-soft/90 flex items-center gap-1.5">
+        <div className="bg-card border border-border/80 p-6 rounded-3xl space-y-4 shadow-card backdrop-blur-md">
+          <h3 className="font-display font-black uppercase tracking-widest text-xs text-rose-deep flex items-center gap-1.5">
             <span>✦</span> Order Price Summary
           </h3>
 
@@ -472,14 +472,14 @@ export function CheckoutPage() {
             </div>
 
             {discount > 0 && (
-              <div className="flex justify-between text-rose-soft font-bold">
+              <div className="flex justify-between text-rose-deep font-bold">
                 <span>Discount on MRP</span>
                 <span>-₹{discount}</span>
               </div>
             )}
 
             {useTokens && tokensToDeduct > 0 && (
-              <div className="flex justify-between text-primary font-bold">
+              <div className="flex justify-between text-rose-deep font-bold">
                 <span className="flex items-center gap-1">
                   <Coins className="h-3.5 w-3.5" /> Tokens Redeemed
                 </span>
@@ -491,7 +491,7 @@ export function CheckoutPage() {
               <span className="text-muted-foreground">Express Delivery</span>
               <span>
                 {shippingFee === 0 ? (
-                  <span className="text-rose-soft font-bold bg-primary/10 border border-primary/25 px-2 py-0.5 rounded-md text-[10px]">
+                  <span className="text-rose-deep font-bold bg-secondary px-2 py-0.5 rounded-md text-[10px] border border-rose-deep/20">
                     FREE
                   </span>
                 ) : (
@@ -502,23 +502,23 @@ export function CheckoutPage() {
 
             <div className="flex justify-between items-baseline font-black text-sm pt-4 border-t border-border/80 text-foreground">
               <span className="uppercase tracking-wider">Final Payable</span>
-              <span className="text-primary text-xl font-black glam-glow">₹{finalPayableTotal}</span>
+              <span className="text-primary text-xl font-black">₹{finalPayableTotal}</span>
             </div>
           </div>
 
           {/* Reward Projection */}
           {estimatedTokensToEarn > 0 && (
-            <div className="rounded-2xl bg-primary/10 p-3 flex items-center gap-2.5 text-[11px] text-rose-soft border border-primary/30 glam-glow">
-              <Sparkles className="h-4 w-4 shrink-0 text-primary animate-pulse" />
+            <div className="rounded-2xl bg-secondary p-3 flex items-center gap-2.5 text-[11px] text-rose-deep border border-rose-deep/30 glam-glow">
+              <Sparkles className="h-4 w-4 shrink-0 text-rose-deep animate-pulse" />
               <span>
-                You will earn <b className="text-white">+{estimatedTokensToEarn} Dwell Tokens</b> upon payment approval.
+                You will earn <b className="text-foreground">+{estimatedTokensToEarn} Dwell Tokens</b> upon payment approval.
               </span>
             </div>
           )}
 
           <div className="pt-2 text-[11px] text-muted-foreground flex items-center gap-2 font-medium">
-            <ShieldCheck className="h-4 w-4 text-emerald-400 shrink-0" />
-            <span>Encrypted UPI Gateway. 100% Authentic Handcrafted silhouetes.</span>
+            <ShieldCheck className="h-4 w-4 text-emerald-600 shrink-0" />
+            <span>Encrypted UPI Gateway. 100% Authentic Handcrafted silhouettes.</span>
           </div>
         </div>
       </div>
