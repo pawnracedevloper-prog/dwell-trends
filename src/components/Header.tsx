@@ -86,15 +86,23 @@ export function Header({ onOpenCart }: { onOpenCart?: () => void }) {
     navigate({ to: "/products", search: { q: q.trim() || undefined } });
   }
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    if (logout) {
-      logout();
-    } else if (setUser) {
-      setUser(null);
+  const handleLogout = async () => {
+    try {
+      if (endpoints.logout) {
+        await endpoints.logout();
+      }
+    } catch (err) {
+      console.error("Backend logout error (clearing local session anyway):", err);
+    } finally {
+      localStorage.removeItem("token");
+      if (logout) {
+        logout();
+      } else if (setUser) {
+        setUser(null);
+      }
+      setOpen(false);
+      navigate({ to: "/auth" });
     }
-    setOpen(false);
-    navigate({ to: "/auth" });
   };
 
   return (
