@@ -98,13 +98,12 @@ export function Header({ onOpenCart }: { onOpenCart?: () => void }) {
     } catch (err) {
       console.warn("Backend logout notification warning:", err);
     } finally {
-      // 1. Clear all authentication cache keys
+      // Clear session keys
       localStorage.removeItem("token");
       localStorage.removeItem("user");
       localStorage.removeItem("shop-storage");
       localStorage.removeItem("saanvi-shop-v1");
 
-      // 2. Clear application store state
       if (typeof logout === "function") {
         logout();
       }
@@ -113,72 +112,73 @@ export function Header({ onOpenCart }: { onOpenCart?: () => void }) {
       }
 
       setOpen(false);
-
-      // 3. Navigate directly to auth route
       navigate({ to: "/auth" });
     }
   };
 
   return (
-    <header className="sticky top-0 z-50 bg-[#0d0f14]/90 border-b border-primary/20 shadow-[0_4px_25px_-4px_rgba(255,42,135,0.18)] backdrop-blur-xl">
-      {/* Top Banner */}
-      <div className="bg-gradient-to-r from-primary via-rose-deep to-primary text-center text-primary-foreground shadow-sm">
+    <header className="sticky top-0 z-50 bg-card/90 border-b border-border/80 shadow-[0_4px_20px_-4px_rgba(71,77,94,0.08)] backdrop-blur-xl transition-colors">
+      {/* Top Banner - Subtle Cool Grey & Rose Accents */}
+      <div className="bg-primary text-primary-foreground border-b border-border/50 text-center shadow-xs">
         <p className="container-page py-1.5 text-[0.7rem] font-bold tracking-wider sm:text-xs flex items-center justify-center gap-2">
-          <span>✦</span> Free shipping on orders above ₹999 &nbsp;·&nbsp; Easy 7-day returns &nbsp;·&nbsp; Token Rewards Active <span>✦</span>
+          <span className="text-rose-soft">✦</span> Free shipping on orders above ₹999 &nbsp;·&nbsp; Easy 7-day returns &nbsp;·&nbsp; Token Rewards Active <span className="text-rose-soft">✦</span>
         </p>
       </div>
 
       {/* Main Header Bar */}
-      <div className="container-page grid grid-cols-[auto_1fr_auto] items-center gap-3 py-3 md:gap-6 md:py-4">
+      <div className="container-page grid grid-cols-[auto_1fr_auto] items-center gap-3 py-3 md:gap-6 md:py-3.5">
         <div className="flex min-w-0 items-center gap-2">
           <button
             type="button"
             aria-label="Menu"
-            className="-ml-1 grid h-9 w-9 shrink-0 place-items-center rounded-xl text-foreground transition-all hover:bg-secondary/70 hover:text-primary md:hidden border border-border/40"
+            className="-ml-1 grid h-9 w-9 shrink-0 place-items-center rounded-xl text-foreground transition-all hover:bg-secondary/70 hover:text-rose-deep md:hidden border border-border/60"
             onClick={() => setOpen((v) => !v)}
           >
             {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
+          
           <Link to="/" className="min-w-0 leading-none group">
             <span className="block font-display text-xl font-black tracking-tight glam-gradient-text sm:text-2xl group-hover:opacity-90 transition-opacity">
               Dwell Trends
             </span>
-            <span className="text-[9px] uppercase tracking-[0.22em] text-rose-soft/80 font-bold hidden sm:block">
+            <span className="text-[9px] uppercase tracking-[0.22em] text-rose-deep font-bold hidden sm:block">
               Modern Living & Ethnic Glam
             </span>
           </Link>
         </div>
 
+        {/* Search Bar - Clean Light Grey Surface with Pink Glow Focus */}
         <form onSubmit={submit} className="hidden md:block">
           <div className="relative group">
-            <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors" />
+            <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground group-focus-within:text-rose-deep transition-colors" />
             <input
               value={q}
               onChange={(e) => setQ(e.target.value)}
               placeholder="Search metallic silks, glam anarkalis, festive drops…"
               aria-label="Search products"
-              className="h-11 w-full rounded-full border border-border/80 bg-secondary/50 pl-11 pr-4 text-xs font-medium text-foreground outline-none transition-all placeholder:text-muted-foreground focus:border-primary focus:bg-card focus:ring-4 focus:ring-primary/20"
+              className="h-10.5 w-full rounded-full border border-border/90 bg-background/80 pl-11 pr-4 text-xs font-medium text-foreground outline-none transition-all placeholder:text-muted-foreground focus:border-rose-deep/60 focus:bg-card focus:ring-4 focus:ring-rose-deep/15"
             />
           </div>
         </form>
 
-        <nav className="flex shrink-0 items-center gap-1.5 sm:gap-2.5">
-          {/* Admin Portal Header Button - Visible strictly to Admins */}
+        {/* Action Controls */}
+        <nav className="flex shrink-0 items-center gap-1.5 sm:gap-2">
+          {/* Admin Portal Header Button */}
           {user?.role === "admin" && (
             <Link
               to="/admin"
-              className="hidden items-center gap-1.5 rounded-full border border-primary/40 bg-primary/10 px-3.5 py-2 text-xs font-bold text-rose-soft transition-all hover:bg-primary/20 hover:border-primary glam-glow sm:flex"
+              className="hidden items-center gap-1.5 rounded-full border border-rose-deep/30 bg-secondary/80 px-3.5 py-1.5 text-xs font-black text-rose-deep transition-all hover:bg-secondary hover:border-rose-deep/60 glam-glow sm:flex"
             >
-              <ShieldAlert className="h-4 w-4 text-primary" />
+              <ShieldAlert className="h-4 w-4 text-rose-deep" />
               <span>Admin Portal</span>
             </Link>
           )}
 
           <Link
             to={user ? "/profile" : "/auth"}
-            className="hidden items-center gap-2 rounded-xl px-3 py-2 text-xs font-bold transition-all hover:bg-secondary/70 hover:text-primary text-foreground sm:flex border border-transparent hover:border-border/60"
+            className="hidden items-center gap-2 rounded-xl px-3 py-1.5 text-xs font-bold transition-all hover:bg-secondary/80 hover:text-rose-deep text-foreground sm:flex border border-transparent hover:border-border/60"
           >
-            <User className="h-4 w-4 text-rose-soft" />
+            <User className="h-4 w-4 text-rose-deep" />
             <span>{user ? user.name.split(" ")[0] : "Login"}</span>
           </Link>
 
@@ -189,25 +189,28 @@ export function Header({ onOpenCart }: { onOpenCart?: () => void }) {
               onClick={handleLogout}
               title="Logout"
               aria-label="Logout"
-              className="hidden h-9 w-9 place-items-center rounded-xl text-muted-foreground transition-all hover:bg-destructive/15 hover:text-destructive border border-border/40 sm:grid"
+              className="hidden h-9 w-9 place-items-center rounded-xl text-muted-foreground transition-all hover:bg-destructive/10 hover:text-destructive border border-border/60 sm:grid"
             >
               <LogOut className="h-4 w-4" />
             </button>
           )}
 
+          {/* Wishlist Icon */}
           <Link
             to="/profile"
             aria-label="Wishlist"
-            className="relative grid h-9 w-9 place-items-center rounded-xl text-foreground transition-all hover:bg-secondary/70 hover:text-primary border border-border/40"
+            className="relative grid h-9 w-9 place-items-center rounded-xl text-foreground transition-all hover:bg-secondary/80 hover:text-rose-deep border border-border/60"
           >
-            <Heart className="h-4.5 w-4.5 text-rose-soft/90" />
+            <Heart className="h-4.5 w-4.5 text-rose-deep" />
             {wishlist.length > 0 && <Badge n={wishlist.length} />}
           </Link>
+
+          {/* Cart Trigger */}
           <button
             type="button"
             onClick={onOpenCart}
             aria-label="Cart"
-            className="relative grid h-9 w-9 place-items-center rounded-xl text-foreground transition-all hover:bg-secondary/70 hover:text-primary border border-border/40"
+            className="relative grid h-9 w-9 place-items-center rounded-xl text-foreground transition-all hover:bg-secondary/80 hover:text-rose-deep border border-border/60"
           >
             <ShoppingBag className="h-4.5 w-4.5 text-primary" />
             {count > 0 && <Badge n={count} />}
@@ -224,53 +227,53 @@ export function Header({ onOpenCart }: { onOpenCart?: () => void }) {
             onChange={(e) => setQ(e.target.value)}
             placeholder="Search products, collections…"
             aria-label="Search products"
-            className="h-10 w-full rounded-full border border-border/80 bg-secondary/50 pl-11 pr-4 text-xs outline-none placeholder:text-muted-foreground focus:border-primary focus:bg-card focus:ring-2 focus:ring-primary/20 text-foreground"
+            className="h-10 w-full rounded-full border border-border bg-background pl-11 pr-4 text-xs outline-none placeholder:text-muted-foreground focus:border-rose-deep focus:bg-card focus:ring-2 focus:ring-rose-deep/15 text-foreground"
           />
         </div>
       </form>
 
-      {/* Desktop Main Categories Navigation with Hover Mega-Dropdowns */}
-      <nav className="relative hidden border-t border-border/40 md:block">
+      {/* Desktop Main Categories Navigation with Floating Mega Dropdowns */}
+      <nav className="relative hidden border-t border-border/60 bg-background/50 md:block">
         <div className="container-page flex items-center justify-center gap-4 lg:gap-8 py-2 text-xs font-semibold tracking-wide">
           {NAVIGATION_CATEGORIES.map((cat) => (
             <div
               key={cat.category}
               onMouseEnter={() => setHoveredCategory(cat.category)}
               onMouseLeave={() => setHoveredCategory(null)}
-              className="relative group py-1.5"
+              className="relative group py-1"
             >
               <Link
                 to="/products"
                 search={{ mainCategory: cat.category }}
-                className="flex items-center gap-1 uppercase tracking-wider font-bold text-muted-foreground group-hover:text-primary transition-colors py-1 px-2.5 rounded-lg group-hover:bg-secondary/50"
+                className="flex items-center gap-1 uppercase tracking-wider font-bold text-foreground/80 group-hover:text-rose-deep transition-colors py-1 px-2.5 rounded-lg group-hover:bg-secondary/60"
               >
                 <span>{cat.category}</span>
-                <ChevronDown className="h-3 w-3 transition-transform duration-200 group-hover:rotate-180 opacity-60 group-hover:opacity-100" />
+                <ChevronDown className="h-3 w-3 transition-transform duration-200 group-hover:rotate-180 opacity-60 group-hover:opacity-100 group-hover:text-rose-deep" />
               </Link>
 
-              {/* Hover Floating Dropdown Menu */}
+              {/* Mega Dropdown Box */}
               {hoveredCategory === cat.category && (
-                <div className="absolute top-full left-1/2 -translate-x-1/2 pt-2 z-50 w-60 animate-in fade-in-50 zoom-in-95 duration-150">
-                  <div className="bg-[#14171e]/95 border border-primary/25 rounded-2xl shadow-[0_12px_35px_-4px_rgba(255,42,135,0.25)] p-3 backdrop-blur-2xl space-y-1 ring-1 ring-white/5">
-                    <div className="px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-rose-soft/80 border-b border-border/50 flex items-center justify-between">
+                <div className="absolute top-full left-1/2 -translate-x-1/2 pt-1.5 z-50 w-60 animate-in fade-in-50 zoom-in-95 duration-150">
+                  <div className="bg-card border border-border rounded-2xl shadow-xl p-3 backdrop-blur-2xl space-y-1 ring-1 ring-black/5">
+                    <div className="px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-rose-deep border-b border-border flex items-center justify-between">
                       <span>{cat.category} Collection</span>
-                      <span className="text-primary text-[10px]">✦</span>
+                      <span className="text-rose-deep text-[10px]">✦</span>
                     </div>
                     {cat.subcategories.map((sub) => (
                       <Link
                         key={sub.name}
                         to="/products"
                         search={{ mainCategory: cat.category, subCategory: sub.sub }}
-                        className="block px-3 py-2 rounded-xl text-[11px] font-medium text-foreground hover:bg-primary hover:text-white transition-all truncate"
+                        className="block px-3 py-2 rounded-xl text-[11px] font-semibold text-foreground/90 hover:bg-secondary hover:text-rose-deep transition-all truncate"
                       >
                         {sub.name}
                       </Link>
                     ))}
-                    <div className="pt-1.5 border-t border-border/50">
+                    <div className="pt-1.5 border-t border-border">
                       <Link
                         to="/products"
                         search={{ mainCategory: cat.category }}
-                        className="flex items-center justify-between px-3 py-1.5 rounded-lg text-[10px] font-black text-primary hover:underline uppercase tracking-wider"
+                        className="flex items-center justify-between px-3 py-1.5 rounded-lg text-[10px] font-black text-rose-deep hover:underline uppercase tracking-wider"
                       >
                         <span>Explore All {cat.category}</span>
                         <span>&rarr;</span>
@@ -282,19 +285,20 @@ export function Header({ onOpenCart }: { onOpenCart?: () => void }) {
             </div>
           ))}
 
+          {/* Hot Deals Highlight Tag */}
           <Link
             to="/products"
             search={{ dealType: "Hot" }}
-            className="flex items-center gap-1.5 uppercase tracking-wider font-bold text-primary hover:text-rose-soft transition-colors py-1 px-3 rounded-full hover:bg-primary/10 border border-primary/30"
+            className="flex items-center gap-1.5 uppercase tracking-wider font-black text-rose-deep hover:text-rose-deep/80 transition-all py-1 px-3 rounded-full bg-secondary/80 border border-rose-deep/30 glam-glow"
           >
-            <Sparkles className="h-3.5 w-3.5 fill-primary text-primary animate-pulse" />
+            <Sparkles className="h-3.5 w-3.5 fill-rose-deep text-rose-deep animate-pulse" />
             <span>Hot Deals</span>
           </Link>
 
           <Link
             to="/products"
             search={{}}
-            className="uppercase tracking-wider font-bold text-foreground hover:text-primary transition-colors py-1 px-2.5"
+            className="uppercase tracking-wider font-bold text-foreground/80 hover:text-rose-deep transition-colors py-1 px-2.5"
           >
             Shop All
           </Link>
@@ -303,12 +307,12 @@ export function Header({ onOpenCart }: { onOpenCart?: () => void }) {
 
       {/* Mobile Drawer Menu */}
       {open && (
-        <div className="border-t border-border bg-[#12151b] md:hidden max-h-[80vh] overflow-y-auto">
+        <div className="border-t border-border bg-card md:hidden max-h-[80vh] overflow-y-auto shadow-2xl">
           <div className="container-page flex flex-col py-3 space-y-1">
-            <div className="flex items-center justify-between pb-2 border-b border-border/60">
-              <span className="eyebrow">Shop Categories</span>
+            <div className="flex items-center justify-between pb-2 border-b border-border">
+              <span className="eyebrow text-rose-deep">Shop Categories</span>
               <button aria-label="Close menu" onClick={() => setOpen(false)}>
-                <X className="h-4 w-4" />
+                <X className="h-4 w-4 text-foreground" />
               </button>
             </div>
 
@@ -317,9 +321,9 @@ export function Header({ onOpenCart }: { onOpenCart?: () => void }) {
               <Link
                 to="/admin"
                 onClick={() => setOpen(false)}
-                className="flex items-center gap-2 rounded-xl border border-primary/40 bg-primary/10 p-2.5 text-xs font-bold text-rose-soft my-1 glam-glow"
+                className="flex items-center gap-2 rounded-xl border border-rose-deep/30 bg-secondary/80 p-2.5 text-xs font-black text-rose-deep my-1 glam-glow"
               >
-                <ShieldAlert className="h-4 w-4 text-primary" />
+                <ShieldAlert className="h-4 w-4 text-rose-deep" />
                 <span>Admin Operations Portal</span>
               </Link>
             )}
@@ -327,7 +331,7 @@ export function Header({ onOpenCart }: { onOpenCart?: () => void }) {
             {NAVIGATION_CATEGORIES.map((cat) => {
               const isExpanded = mobileExpandedCat === cat.category;
               return (
-                <div key={cat.category} className="border-b border-border/40 py-1">
+                <div key={cat.category} className="border-b border-border/50 py-1">
                   <div className="flex items-center justify-between py-2">
                     <Link
                       to="/products"
@@ -343,7 +347,7 @@ export function Header({ onOpenCart }: { onOpenCart?: () => void }) {
                       className="p-1 rounded-md text-muted-foreground hover:bg-secondary"
                     >
                       <ChevronDown
-                        className={`h-4 w-4 transition-transform ${isExpanded ? "rotate-180 text-primary" : ""}`}
+                        className={`h-4 w-4 transition-transform ${isExpanded ? "rotate-180 text-rose-deep" : ""}`}
                       />
                     </button>
                   </div>
@@ -356,7 +360,7 @@ export function Header({ onOpenCart }: { onOpenCart?: () => void }) {
                           to="/products"
                           search={{ mainCategory: cat.category, subCategory: sub.sub }}
                           onClick={() => setOpen(false)}
-                          className="block py-1 text-xs text-muted-foreground hover:text-primary transition-colors"
+                          className="block py-1 text-xs text-muted-foreground hover:text-rose-deep transition-colors"
                         >
                           {sub.name}
                         </Link>
@@ -371,22 +375,22 @@ export function Header({ onOpenCart }: { onOpenCart?: () => void }) {
               to="/products"
               search={{ dealType: "Hot" }}
               onClick={() => setOpen(false)}
-              className="py-2.5 text-xs font-bold text-primary flex items-center gap-1.5"
+              className="py-2.5 text-xs font-black text-rose-deep flex items-center gap-1.5"
             >
-              <Sparkles className="h-3.5 w-3.5 fill-primary" /> Hot Deals
+              <Sparkles className="h-3.5 w-3.5 fill-rose-deep text-rose-deep" /> Hot Deals
             </Link>
 
             <Link
               to="/products"
               search={{}}
               onClick={() => setOpen(false)}
-              className="py-2.5 text-xs font-bold text-foreground hover:text-primary"
+              className="py-2.5 text-xs font-bold text-foreground hover:text-rose-deep"
             >
               Shop All Catalog
             </Link>
 
             {user ? (
-              <div className="border-t border-border/60 pt-2 space-y-1">
+              <div className="border-t border-border pt-2 space-y-1">
                 <Link
                   to="/profile"
                   onClick={() => setOpen(false)}
@@ -406,7 +410,7 @@ export function Header({ onOpenCart }: { onOpenCart?: () => void }) {
               <Link
                 to="/auth"
                 onClick={() => setOpen(false)}
-                className="border-t border-border/60 pt-3 text-xs font-semibold text-muted-foreground"
+                className="border-t border-border pt-3 text-xs font-semibold text-muted-foreground"
               >
                 Login / Sign up
               </Link>
@@ -420,7 +424,7 @@ export function Header({ onOpenCart }: { onOpenCart?: () => void }) {
 
 function Badge({ n }: { n: number }) {
   return (
-    <span className="absolute -top-1 -right-1 grid h-4 min-w-4 place-items-center rounded-full bg-primary px-1 text-[0.625rem] font-black text-white glam-glow">
+    <span className="absolute -top-1 -right-1 grid h-4 min-w-4 place-items-center rounded-full bg-rose-deep px-1 text-[0.625rem] font-black text-white glam-glow">
       {n}
     </span>
   );

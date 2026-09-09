@@ -4,9 +4,10 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * Dwell Trends Luxury Cyber-Glam Design System
- * Palette: Slate Grey & Charcoal Architecture, Cyber Hot Pink Primary,
- * Orchid Rose Accents, Platinum Highlights. All colours in oklch.
+ * Dwell Trends Classic Cool Grey & Cyber Pink Glam System
+ * Base: Industrial Cool Grey Studio Canvas (~#E2E5E9 / #EDF0F3)
+ * Primary: Deep Steel Slate Grey (~#474D5E)
+ * Secondary / Accents: Cyber Hot Pink (#FF2A85), Soft Orchid Rose & Chrome Silver
  */
 
 @theme inline {
@@ -57,98 +58,101 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
-  --shadow-card: 0 4px 20px -2px oklch(0.65 0.28 355 / 0.12), 0 2px 8px -2px oklch(0.2 0.02 260 / 0.1);
-  --shadow-lift: 0 10px 30px -4px oklch(0.65 0.28 355 / 0.24), 0 4px 12px oklch(0.2 0.02 260 / 0.1);
-  --shadow-bar: 0 2px 16px -2px oklch(0.65 0.28 355 / 0.18);
+  --shadow-card: 0 4px 20px -2px oklch(0.20 0.02 260 / 0.08), 0 2px 6px -1px oklch(0.65 0.28 355 / 0.08);
+  --shadow-lift: 0 12px 32px -4px oklch(0.20 0.02 260 / 0.14), 0 4px 12px oklch(0.65 0.28 355 / 0.16);
+  --shadow-bar: 0 2px 14px -2px oklch(0.20 0.02 260 / 0.10);
 }
 
 :root {
   --radius: 0.85rem;
-  /* Dark Slate / Charcoal Architectural Canvas */
-  --background: oklch(0.12 0.015 260);        /* Deep Slate Metal */
-  --foreground: oklch(0.97 0.01 340);          /* Crisp Platinum White */
   
-  --card: oklch(0.16 0.02 260);                /* Frosted Slate Card */
-  --card-foreground: oklch(0.98 0.01 340);
+  /* 1. Distinct Classic Cool Grey Studio Canvas */
+  --background: oklch(0.92 0.012 260);          /* Rich Light Cool Grey (~#E2E5E9) */
+  --foreground: oklch(0.20 0.025 265);          /* Deep Charcoal Text */
   
-  --popover: oklch(0.18 0.025 260);
-  --popover-foreground: oklch(0.98 0.01 340);
+  --card: oklch(0.96 0.008 260);                /* Raised Light Slate Grey Card Surface */
+  --card-foreground: oklch(0.20 0.025 265);
   
-  /* Cyber Hot Pink & Girlish Orchid Tones */
-  --primary: oklch(0.65 0.28 355);             /* Electric Hot Pink (#FF2A85) */
-  --primary-foreground: oklch(0.99 0.005 340);
+  --popover: oklch(0.96 0.008 260);
+  --popover-foreground: oklch(0.20 0.025 265);
   
-  --secondary: oklch(0.22 0.03 270);           /* Slate Muted Charcoal */
-  --secondary-foreground: oklch(0.88 0.12 345);/* Muted Orchid Pink */
+  /* 2. Primary: Deep Classic Slate-Steel Grey */
+  --primary: oklch(0.38 0.022 260);              /* Deep Steel Grey (~#474D5E) */
+  --primary-foreground: oklch(0.98 0.005 260);   /* Crisp White Text */
   
-  --muted: oklch(0.20 0.025 265);
-  --muted-foreground: oklch(0.72 0.04 270);    /* Metallic Silver Grey */
+  /* 3. Secondary: Rose-Tinted Cool Grey & Cyber Pink */
+  --secondary: oklch(0.88 0.018 345);            /* Muted Pinkish-Grey */
+  --secondary-foreground: oklch(0.58 0.26 355);  /* Cyber Pink Text Accent */
   
-  --accent: oklch(0.26 0.05 340);              /* Soft Violet-Pink Sheen */
-  --accent-foreground: oklch(0.92 0.14 345);
+  --muted: oklch(0.85 0.012 260);                /* Defined Mid-Tone Grey */
+  --muted-foreground: oklch(0.44 0.022 265);     /* Steel Muted Text */
+  
+  --accent: oklch(0.87 0.04 345);                /* Soft Rose-Grey Wash */
+  --accent-foreground: oklch(0.58 0.26 355);
   
   --destructive: oklch(0.58 0.24 25);
   --destructive-foreground: oklch(0.99 0.005 340);
   
-  --border: oklch(0.30 0.04 330 / 35%);        /* Platinum-Pink Hairline Border */
-  --input: oklch(0.22 0.03 270);
-  --ring: oklch(0.65 0.28 355);
+  --border: oklch(0.82 0.015 260);               /* Clearly Defined Silver-Grey Border */
+  --input: oklch(0.89 0.01 260);
+  --ring: oklch(0.65 0.28 355);                  /* Hot Pink Focus Ring */
   
-  --rose-deep: oklch(0.55 0.26 350);           /* Crimson Fuchsia */
-  --rose-soft: oklch(0.85 0.12 345);           /* Bubblegum / Pastel Blush */
-  --gold: oklch(0.82 0.14 85);                 /* Champagne Platinum */
-  --success: oklch(0.68 0.18 150);
-  --sale: oklch(0.65 0.28 355);
+  /* Girlish Glam Accent Tokens */
+  --rose-deep: oklch(0.58 0.26 355);             /* Cyber Electric Pink (#FF2A85) */
+  --rose-soft: oklch(0.80 0.13 345);             /* Orchid Blush */
+  --gold: oklch(0.75 0.14 85);                   /* Platinum Champagne */
+  --success: oklch(0.60 0.17 150);
+  --sale: oklch(0.58 0.26 355);                  /* Pink Sale Badges */
   
-  --chart-1: oklch(0.65 0.28 355);
-  --chart-2: oklch(0.72 0.16 320);
-  --chart-3: oklch(0.82 0.14 85);
-  --chart-4: oklch(0.55 0.26 350);
-  --chart-5: oklch(0.85 0.12 345);
+  --chart-1: oklch(0.58 0.26 355);
+  --chart-2: oklch(0.38 0.022 260);
+  --chart-3: oklch(0.75 0.14 85);
+  --chart-4: oklch(0.80 0.13 345);
+  --chart-5: oklch(0.44 0.022 265);
   
-  --sidebar: oklch(0.14 0.018 260);
-  --sidebar-foreground: oklch(0.97 0.01 340);
-  --sidebar-primary: oklch(0.65 0.28 355);
-  --sidebar-primary-foreground: oklch(0.99 0.005 340);
-  --sidebar-accent: oklch(0.22 0.03 270);
-  --sidebar-accent-foreground: oklch(0.88 0.12 345);
-  --sidebar-border: oklch(0.30 0.04 330 / 35%);
+  --sidebar: oklch(0.90 0.012 260);
+  --sidebar-foreground: oklch(0.20 0.025 265);
+  --sidebar-primary: oklch(0.38 0.022 260);
+  --sidebar-primary-foreground: oklch(0.98 0.005 260);
+  --sidebar-accent: oklch(0.88 0.018 345);
+  --sidebar-accent-foreground: oklch(0.58 0.26 355);
+  --sidebar-border: oklch(0.82 0.015 260);
   --sidebar-ring: oklch(0.65 0.28 355);
 }
 
 .dark {
-  --background: oklch(0.09 0.015 260);        /* Deep Obsidian Void */
-  --foreground: oklch(0.98 0.01 340);
-  --card: oklch(0.13 0.02 260);
-  --card-foreground: oklch(0.98 0.01 340);
-  --popover: oklch(0.15 0.025 260);
-  --popover-foreground: oklch(0.98 0.01 340);
-  --primary: oklch(0.68 0.29 355);
-  --primary-foreground: oklch(0.99 0.005 340);
-  --secondary: oklch(0.19 0.03 270);
-  --secondary-foreground: oklch(0.90 0.13 345);
-  --muted: oklch(0.18 0.025 265);
-  --muted-foreground: oklch(0.68 0.04 270);
-  --accent: oklch(0.24 0.05 340);
-  --accent-foreground: oklch(0.95 0.15 345);
+  --background: oklch(0.16 0.015 260);          /* Deep Steel Slate Dark Mode */
+  --foreground: oklch(0.95 0.008 260);
+  --card: oklch(0.20 0.02 260);
+  --card-foreground: oklch(0.95 0.008 260);
+  --popover: oklch(0.20 0.02 260);
+  --popover-foreground: oklch(0.95 0.008 260);
+  --primary: oklch(0.80 0.012 260);              /* Metallic Grey in Dark Mode */
+  --primary-foreground: oklch(0.16 0.015 260);
+  --secondary: oklch(0.24 0.025 270);
+  --secondary-foreground: oklch(0.88 0.14 345);
+  --muted: oklch(0.23 0.018 265);
+  --muted-foreground: oklch(0.68 0.02 265);
+  --accent: oklch(0.26 0.04 340);
+  --accent-foreground: oklch(0.92 0.14 345);
   --destructive: oklch(0.62 0.22 25);
   --destructive-foreground: oklch(0.99 0.005 340);
-  --border: oklch(0.32 0.05 330 / 40%);
-  --input: oklch(0.19 0.03 270);
-  --ring: oklch(0.68 0.29 355);
-  --rose-deep: oklch(0.60 0.28 350);
+  --border: oklch(0.30 0.02 260);
+  --input: oklch(0.24 0.02 260);
+  --ring: oklch(0.65 0.28 355);
+  --rose-deep: oklch(0.65 0.28 355);
   --rose-soft: oklch(0.88 0.14 345);
-  --gold: oklch(0.85 0.15 85);
-  --success: oklch(0.70 0.19 150);
-  --sale: oklch(0.68 0.29 355);
-  --sidebar: oklch(0.11 0.018 260);
-  --sidebar-foreground: oklch(0.98 0.01 340);
-  --sidebar-primary: oklch(0.68 0.29 355);
-  --sidebar-primary-foreground: oklch(0.99 0.005 340);
-  --sidebar-accent: oklch(0.19 0.03 270);
-  --sidebar-accent-foreground: oklch(0.90 0.13 345);
-  --sidebar-border: oklch(0.32 0.05 330 / 40%);
-  --sidebar-ring: oklch(0.68 0.29 355);
+  --gold: oklch(0.82 0.14 85);
+  --success: oklch(0.68 0.18 150);
+  --sale: oklch(0.65 0.28 355);
+  --sidebar: oklch(0.18 0.018 260);
+  --sidebar-foreground: oklch(0.95 0.008 260);
+  --sidebar-primary: oklch(0.80 0.012 260);
+  --sidebar-primary-foreground: oklch(0.16 0.015 260);
+  --sidebar-accent: oklch(0.24 0.025 270);
+  --sidebar-accent-foreground: oklch(0.88 0.14 345);
+  --sidebar-border: oklch(0.30 0.02 260);
+  --sidebar-ring: oklch(0.65 0.28 355);
 }
 
 @layer base {
@@ -188,7 +192,7 @@
   letter-spacing: 0.22em;
   text-transform: uppercase;
   font-weight: 700;
-  color: var(--color-rose-soft);
+  color: var(--color-rose-deep);
 }
 
 @utility card-surface {
@@ -196,15 +200,14 @@
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-card);
   border: 1px solid var(--color-border);
-  backdrop-filter: blur(16px);
 }
 
 @utility glam-glow {
-  box-shadow: 0 0 25px -4px oklch(0.65 0.28 355 / 0.35);
+  box-shadow: 0 0 20px -2px oklch(0.58 0.26 355 / 0.25);
 }
 
 @utility glam-gradient-text {
-  background: linear-gradient(135deg, #ffffff 15%, #f4a6c7 60%, #ff2a85 100%);
+  background: linear-gradient(135deg, #373c49 0%, #5a6173 45%, #ff2a85 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
