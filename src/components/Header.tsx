@@ -1,7 +1,8 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Heart, Menu, Search, ShoppingBag, User, X, ChevronDown, Sparkles } from "lucide-react";
-import { useState } from "react";
+import { Heart, Menu, Search, ShoppingBag, User, X, ChevronDown, Sparkles, ShieldAlert } from "lucide-react";
+import { useState, useEffect } from "react";
 import { useShop } from "@/lib/store";
+import { endpoints } from "@/lib/endpoints";
 
 export const NAVIGATION_CATEGORIES = [
   {
@@ -62,8 +63,22 @@ export function Header({ onOpenCart }: { onOpenCart?: () => void }) {
   const [hoveredCategory, setHoveredCategory] = useState<string | null>(null);
   const [mobileExpandedCat, setMobileExpandedCat] = useState<string | null>(null);
   const navigate = useNavigate();
-  const { cart, wishlist, user } = useShop();
+  const { cart, wishlist, user, setUser } = useShop();
   const count = cart.reduce((n, c) => n + c.qty, 0);
+
+  // Sync user authentication state on mount if token exists in localStorage
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token && !user) {
+      endpoints.getProfile?.()
+        .then((res: any) => {
+          if (res?.success && res.user && setUser) {
+            setUser(res.user);
+          }
+        })
+        .catch(console.error);
+    }
+  }, [user, setUser]);
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -115,6 +130,17 @@ export function Header({ onOpenCart }: { onOpenCart?: () => void }) {
         </form>
 
         <nav className="flex shrink-0 items-center gap-1 sm:gap-2">
+          {/* Admin Portal Header Button - Visible strictly to Admins */}
+          {user?.role === "admin" && (
+            <Link
+              to="/admin"
+              className="hidden items-center gap-1.5 rounded-lg border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-xs font-bold text-amber-700 transition-colors hover:bg-amber-500/20 sm:flex"
+            >
+              <ShieldAlert className="h-4 w-4 text-amber-600" />
+              <span>Admin Portal</span>
+            </Link>
+          )}
+
           <Link
             to={user ? "/profile" : "/auth"}
             className="hidden items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors hover:bg-accent sm:flex"
@@ -237,6 +263,18 @@ export function Header({ onOpenCart }: { onOpenCart?: () => void }) {
                 <X className="h-4 w-4" />
               </button>
             </div>
+
+            {/* Mobile Admin Portal Item */}
+            {user?.role === "admin" && (
+              <Link
+                to="/admin"
+                onClick={() => setOpen(false)}
+                className="flex items-center gap-2 rounded-xl border border-amber-500/40 bg-amber-500/10 p-2.5 text-xs font-bold text-amber-700 my-1"
+              >
+                <ShieldAlert className="h-4 w-4 text-amber-600" />
+                <span>Admin Operations Portal</span>
+              </Link>
+            )}
 
             {NAVIGATION_CATEGORIES.map((cat) => {
               const isExpanded = mobileExpandedCat === cat.category;
