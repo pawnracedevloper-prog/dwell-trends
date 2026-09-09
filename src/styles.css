@@ -4,10 +4,14 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * Dwell Trends Classic Cool Grey & Cyber Pink Glam System
- * Base: Industrial Cool Grey Studio Canvas (~#E2E5E9 / #EDF0F3)
- * Primary: Deep Steel Slate Grey (~#474D5E)
- * Secondary / Accents: Cyber Hot Pink (#FF2A85), Soft Orchid Rose & Chrome Silver
+ * Dwell Trends — Classic Grey & Raspberry Glam System
+ * Base: Warm Neutral Studio Canvas (~#F1EFED / #FAF9F7)
+ * Primary: Classic Warm Charcoal Grey (~#3B3835)
+ * Secondary / Accent: Raspberry Pink (~#D93368), Blush & Champagne
+ *
+ * Design intent: swap the cool "tech steel + neon cyber pink" pairing for a
+ * warmer, timeless grey with a raspberry accent — reads as boutique/catalog
+ * (classic) rather than SaaS dashboard, while the pink keeps it playful.
  */
 
 @theme inline {
@@ -18,8 +22,8 @@
   --radius-2xl: calc(var(--radius) + 8px);
   --radius-3xl: calc(var(--radius) + 12px);
   --radius-4xl: calc(var(--radius) + 16px);
-  --font-display: "Marcellus", Georgia, serif;
-  --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Fraunces", "Playfair Display", Georgia, serif;
+  --font-sans: "Work Sans", ui-sans-serif, system-ui, sans-serif;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -58,101 +62,101 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
-  --shadow-card: 0 4px 20px -2px oklch(0.20 0.02 260 / 0.08), 0 2px 6px -1px oklch(0.65 0.28 355 / 0.08);
-  --shadow-lift: 0 12px 32px -4px oklch(0.20 0.02 260 / 0.14), 0 4px 12px oklch(0.65 0.28 355 / 0.16);
-  --shadow-bar: 0 2px 14px -2px oklch(0.20 0.02 260 / 0.10);
+  --shadow-card: 0 4px 20px -2px oklch(0.24 0.015 80 / 0.09), 0 2px 6px -1px oklch(0.55 0.19 15 / 0.08);
+  --shadow-lift: 0 14px 34px -6px oklch(0.24 0.015 80 / 0.16), 0 4px 12px oklch(0.55 0.19 15 / 0.16);
+  --shadow-bar: 0 2px 14px -2px oklch(0.24 0.015 80 / 0.10);
 }
 
 :root {
   --radius: 0.85rem;
-  
-  /* 1. Distinct Classic Cool Grey Studio Canvas */
-  --background: oklch(0.92 0.012 260);          /* Rich Light Cool Grey (~#E2E5E9) */
-  --foreground: oklch(0.20 0.025 265);          /* Deep Charcoal Text */
-  
-  --card: oklch(0.96 0.008 260);                /* Raised Light Slate Grey Card Surface */
-  --card-foreground: oklch(0.20 0.025 265);
-  
-  --popover: oklch(0.96 0.008 260);
-  --popover-foreground: oklch(0.20 0.025 265);
-  
-  /* 2. Primary: Deep Classic Slate-Steel Grey */
-  --primary: oklch(0.38 0.022 260);              /* Deep Steel Grey (~#474D5E) */
-  --primary-foreground: oklch(0.98 0.005 260);   /* Crisp White Text */
-  
-  /* 3. Secondary: Rose-Tinted Cool Grey & Cyber Pink */
-  --secondary: oklch(0.88 0.018 345);            /* Muted Pinkish-Grey */
-  --secondary-foreground: oklch(0.58 0.26 355);  /* Cyber Pink Text Accent */
-  
-  --muted: oklch(0.85 0.012 260);                /* Defined Mid-Tone Grey */
-  --muted-foreground: oklch(0.44 0.022 265);     /* Steel Muted Text */
-  
-  --accent: oklch(0.87 0.04 345);                /* Soft Rose-Grey Wash */
-  --accent-foreground: oklch(0.58 0.26 355);
-  
-  --destructive: oklch(0.58 0.24 25);
-  --destructive-foreground: oklch(0.99 0.005 340);
-  
-  --border: oklch(0.82 0.015 260);               /* Clearly Defined Silver-Grey Border */
-  --input: oklch(0.89 0.01 260);
-  --ring: oklch(0.65 0.28 355);                  /* Hot Pink Focus Ring */
-  
-  /* Girlish Glam Accent Tokens */
-  --rose-deep: oklch(0.58 0.26 355);             /* Cyber Electric Pink (#FF2A85) */
-  --rose-soft: oklch(0.80 0.13 345);             /* Orchid Blush */
-  --gold: oklch(0.75 0.14 85);                   /* Platinum Champagne */
-  --success: oklch(0.60 0.17 150);
-  --sale: oklch(0.58 0.26 355);                  /* Pink Sale Badges */
-  
-  --chart-1: oklch(0.58 0.26 355);
-  --chart-2: oklch(0.38 0.022 260);
-  --chart-3: oklch(0.75 0.14 85);
-  --chart-4: oklch(0.80 0.13 345);
-  --chart-5: oklch(0.44 0.022 265);
-  
-  --sidebar: oklch(0.90 0.012 260);
-  --sidebar-foreground: oklch(0.20 0.025 265);
-  --sidebar-primary: oklch(0.38 0.022 260);
-  --sidebar-primary-foreground: oklch(0.98 0.005 260);
-  --sidebar-accent: oklch(0.88 0.018 345);
-  --sidebar-accent-foreground: oklch(0.58 0.26 355);
-  --sidebar-border: oklch(0.82 0.015 260);
-  --sidebar-ring: oklch(0.65 0.28 355);
+
+  /* 1. Warm Neutral Studio Canvas — classic catalog paper, not cool tech-grey */
+  --background: oklch(0.95 0.006 80);           /* Warm Paper Grey (~#F1EFED) */
+  --foreground: oklch(0.23 0.012 75);           /* Warm Charcoal Text */
+
+  --card: oklch(0.98 0.004 80);                 /* Raised Warm Off-White Card */
+  --card-foreground: oklch(0.23 0.012 75);
+
+  --popover: oklch(0.98 0.004 80);
+  --popover-foreground: oklch(0.23 0.012 75);
+
+  /* 2. Primary: Classic Warm Charcoal Grey */
+  --primary: oklch(0.34 0.014 75);              /* Deep Warm Charcoal (~#3B3835) */
+  --primary-foreground: oklch(0.98 0.004 80);   /* Crisp Warm White Text */
+
+  /* 3. Secondary: Blush Grey & Raspberry Pink */
+  --secondary: oklch(0.90 0.028 20);            /* Soft Blush-Grey */
+  --secondary-foreground: oklch(0.50 0.19 15);  /* Raspberry Text Accent */
+
+  --muted: oklch(0.87 0.010 78);                /* Defined Warm Mid-Grey */
+  --muted-foreground: oklch(0.45 0.014 75);     /* Warm Muted Text */
+
+  --accent: oklch(0.89 0.045 15);               /* Soft Raspberry Wash */
+  --accent-foreground: oklch(0.50 0.19 15);
+
+  --destructive: oklch(0.58 0.22 27);
+  --destructive-foreground: oklch(0.99 0.005 40);
+
+  --border: oklch(0.83 0.012 78);               /* Defined Warm Silver Border */
+  --input: oklch(0.90 0.008 80);
+  --ring: oklch(0.60 0.20 15);                  /* Raspberry Focus Ring */
+
+  /* Playful Accent Tokens */
+  --rose-deep: oklch(0.58 0.20 15);             /* Raspberry Pink (~#D93368) — primary accent */
+  --rose-soft: oklch(0.83 0.09 15);             /* Blush Rose */
+  --gold: oklch(0.79 0.11 80);                  /* Champagne — third accent, keeps pink from carrying everything */
+  --success: oklch(0.60 0.15 145);
+  --sale: oklch(0.58 0.20 15);                  /* Pink Sale Badges */
+
+  --chart-1: oklch(0.58 0.20 15);
+  --chart-2: oklch(0.34 0.014 75);
+  --chart-3: oklch(0.79 0.11 80);
+  --chart-4: oklch(0.83 0.09 15);
+  --chart-5: oklch(0.45 0.014 75);
+
+  --sidebar: oklch(0.93 0.008 80);
+  --sidebar-foreground: oklch(0.23 0.012 75);
+  --sidebar-primary: oklch(0.34 0.014 75);
+  --sidebar-primary-foreground: oklch(0.98 0.004 80);
+  --sidebar-accent: oklch(0.90 0.028 20);
+  --sidebar-accent-foreground: oklch(0.50 0.19 15);
+  --sidebar-border: oklch(0.83 0.012 78);
+  --sidebar-ring: oklch(0.60 0.20 15);
 }
 
 .dark {
-  --background: oklch(0.16 0.015 260);          /* Deep Steel Slate Dark Mode */
-  --foreground: oklch(0.95 0.008 260);
-  --card: oklch(0.20 0.02 260);
-  --card-foreground: oklch(0.95 0.008 260);
-  --popover: oklch(0.20 0.02 260);
-  --popover-foreground: oklch(0.95 0.008 260);
-  --primary: oklch(0.80 0.012 260);              /* Metallic Grey in Dark Mode */
-  --primary-foreground: oklch(0.16 0.015 260);
-  --secondary: oklch(0.24 0.025 270);
-  --secondary-foreground: oklch(0.88 0.14 345);
-  --muted: oklch(0.23 0.018 265);
-  --muted-foreground: oklch(0.68 0.02 265);
-  --accent: oklch(0.26 0.04 340);
-  --accent-foreground: oklch(0.92 0.14 345);
-  --destructive: oklch(0.62 0.22 25);
-  --destructive-foreground: oklch(0.99 0.005 340);
-  --border: oklch(0.30 0.02 260);
-  --input: oklch(0.24 0.02 260);
-  --ring: oklch(0.65 0.28 355);
-  --rose-deep: oklch(0.65 0.28 355);
-  --rose-soft: oklch(0.88 0.14 345);
-  --gold: oklch(0.82 0.14 85);
-  --success: oklch(0.68 0.18 150);
-  --sale: oklch(0.65 0.28 355);
-  --sidebar: oklch(0.18 0.018 260);
-  --sidebar-foreground: oklch(0.95 0.008 260);
-  --sidebar-primary: oklch(0.80 0.012 260);
-  --sidebar-primary-foreground: oklch(0.16 0.015 260);
-  --sidebar-accent: oklch(0.24 0.025 270);
-  --sidebar-accent-foreground: oklch(0.88 0.14 345);
-  --sidebar-border: oklch(0.30 0.02 260);
-  --sidebar-ring: oklch(0.65 0.28 355);
+  --background: oklch(0.18 0.010 75);           /* Warm Charcoal Dark Mode */
+  --foreground: oklch(0.95 0.006 80);
+  --card: oklch(0.22 0.012 75);
+  --card-foreground: oklch(0.95 0.006 80);
+  --popover: oklch(0.22 0.012 75);
+  --popover-foreground: oklch(0.95 0.006 80);
+  --primary: oklch(0.82 0.010 78);              /* Warm Metallic Grey in Dark Mode */
+  --primary-foreground: oklch(0.18 0.010 75);
+  --secondary: oklch(0.27 0.020 20);
+  --secondary-foreground: oklch(0.86 0.13 15);
+  --muted: oklch(0.25 0.012 75);
+  --muted-foreground: oklch(0.68 0.014 78);
+  --accent: oklch(0.28 0.035 15);
+  --accent-foreground: oklch(0.90 0.13 15);
+  --destructive: oklch(0.62 0.20 27);
+  --destructive-foreground: oklch(0.99 0.005 40);
+  --border: oklch(0.32 0.014 75);
+  --input: oklch(0.26 0.012 75);
+  --ring: oklch(0.65 0.22 15);
+  --rose-deep: oklch(0.65 0.22 15);
+  --rose-soft: oklch(0.86 0.13 15);
+  --gold: oklch(0.81 0.11 80);
+  --success: oklch(0.68 0.16 145);
+  --sale: oklch(0.65 0.22 15);
+  --sidebar: oklch(0.20 0.012 75);
+  --sidebar-foreground: oklch(0.95 0.006 80);
+  --sidebar-primary: oklch(0.82 0.010 78);
+  --sidebar-primary-foreground: oklch(0.18 0.010 75);
+  --sidebar-accent: oklch(0.27 0.020 20);
+  --sidebar-accent-foreground: oklch(0.86 0.13 15);
+  --sidebar-border: oklch(0.32 0.014 75);
+  --sidebar-ring: oklch(0.65 0.22 15);
 }
 
 @layer base {
@@ -172,8 +176,8 @@
   h3,
   .font-display {
     font-family: var(--font-display);
-    font-weight: 400;
-    letter-spacing: -0.005em;
+    font-weight: 480;
+    letter-spacing: -0.008em;
   }
 }
 
@@ -187,9 +191,12 @@
   }
 }
 
+/* Product-tag style label (sale/new/bestseller badges) — kept uppercase because
+   that's genuine retail-tag vernacular, not a decorative section eyebrow. Use
+   sparingly on actual tags/badges, not stacked above every heading. */
 @utility eyebrow {
   font-size: 0.6875rem;
-  letter-spacing: 0.22em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   font-weight: 700;
   color: var(--color-rose-deep);
@@ -203,11 +210,11 @@
 }
 
 @utility glam-glow {
-  box-shadow: 0 0 20px -2px oklch(0.58 0.26 355 / 0.25);
+  box-shadow: 0 0 20px -2px oklch(0.58 0.20 15 / 0.22);
 }
 
 @utility glam-gradient-text {
-  background: linear-gradient(135deg, #373c49 0%, #5a6173 45%, #ff2a85 100%);
+  background: linear-gradient(135deg, #3b3835 0%, #6b625a 45%, #d93368 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
