@@ -25,12 +25,26 @@ const CATEGORY_BUBBLES = [
 ];
 
 export function HomePage() {
-  const { user } = useShop();
+  const { user, setUser } = useShop();
   const [activeCampaign, setActiveCampaign] = useState<any>(null);
   const [featuredProducts, setFeaturedProducts] = useState<any[]>([]);
   const [flashDeals, setFlashDeals] = useState<any[]>([]);
   const [budgetUnder999, setBudgetUnder999] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Synchronize user session state on page load
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token && !user) {
+      endpoints.getProfile?.()
+        .then((res: any) => {
+          if (res?.success && res.user && setUser) {
+            setUser(res.user);
+          }
+        })
+        .catch(console.error);
+    }
+  }, [user, setUser]);
 
   useEffect(() => {
     async function loadCatalog() {
@@ -163,15 +177,15 @@ export function HomePage() {
       <section className="container-page">
         {activeCampaign?.bannerImage?.url ? (
           /* DWELL GRAND GALA HERO BANNER */
-          <div className="relative rounded-3xl overflow-hidden shadow-2xl border border-border min-h-[380px] sm:min-h-[460px] flex flex-col justify-end p-8 sm:p-14 text-white group">
+          <div className="relative rounded-3xl overflow-hidden shadow-2xl border border-border min-h-[440px] sm:min-h-[520px] flex flex-col justify-end p-6 sm:p-12 text-white group bg-card">
             <img
               src={activeCampaign.bannerImage.url}
               alt={activeCampaign.title}
-              className="absolute inset-0 w-full h-full object-cover group-hover:scale-102 transition-transform duration-700 brightness-[0.82]"
+              className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 brightness-[0.70]"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/55 to-transparent" />
 
-            <div className="relative z-10 max-w-2xl space-y-4">
+            <div className="relative z-10 max-w-2xl space-y-3 sm:space-y-4">
               <div className="flex flex-wrap items-center gap-2">
                 <span className="bg-amber-500 text-black px-3.5 py-1 rounded-full text-xs font-black tracking-wider uppercase shadow-md flex items-center gap-1.5">
                   <Zap className="h-3.5 w-3.5 fill-black" /> {activeCampaign.badgeText || "GRAND GALA LIVE"}
@@ -183,19 +197,19 @@ export function HomePage() {
                 )}
               </div>
 
-              <h1 className="font-display text-3xl sm:text-5xl lg:text-6xl font-black leading-tight tracking-tight drop-shadow-md">
+              <h1 className="font-display text-2xl sm:text-4xl lg:text-5xl font-black leading-tight tracking-tight drop-shadow-md">
                 {activeCampaign.title}
               </h1>
 
-              <p className="text-xs sm:text-sm text-gray-200 leading-relaxed max-w-lg drop-shadow">
+              <p className="text-xs sm:text-sm text-gray-200 leading-relaxed max-w-lg drop-shadow line-clamp-2 sm:line-clamp-none">
                 {activeCampaign.tagline}
               </p>
 
-              <div className="flex flex-wrap items-center gap-4 pt-2">
+              <div className="flex flex-wrap items-center gap-3 pt-2">
                 <Link
                   to="/products"
                   search={{ dealType: "Wow" }}
-                  className="px-8 py-3.5 bg-primary text-primary-foreground rounded-full text-xs font-bold uppercase tracking-wider hover:opacity-95 shadow-lg flex items-center gap-2"
+                  className="px-6 sm:px-8 py-3 bg-primary text-primary-foreground rounded-full text-xs font-bold uppercase tracking-wider hover:opacity-95 shadow-lg flex items-center gap-2 transition-transform active:scale-95"
                 >
                   Explore Gala Steals <ArrowRight className="h-4 w-4" />
                 </Link>
@@ -204,7 +218,7 @@ export function HomePage() {
                 {user?.role === "admin" && (
                   <Link
                     to="/admin"
-                    className="px-6 py-3.5 border border-white/30 bg-black/40 backdrop-blur-md text-white rounded-full text-xs font-bold hover:bg-black/60 transition-colors flex items-center gap-1.5 shadow-md"
+                    className="px-5 sm:px-6 py-3 border border-amber-400/50 bg-black/65 backdrop-blur-md text-amber-300 rounded-full text-xs font-bold hover:bg-black/85 transition-colors flex items-center gap-1.5 shadow-md"
                   >
                     <ShieldAlert className="h-4 w-4 text-amber-400" /> Admin Portal
                   </Link>
